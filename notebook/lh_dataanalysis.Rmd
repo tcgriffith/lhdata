@@ -1,0 +1,193 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(RSQLite)
+library(DBI)
+library(dplyr)
+```
+
+```{r}
+
+#con <- dbConnect(RSQLite::SQLite(),dbname="../data/BaiduYunCacheFileV0.db")
+
+# c:/Users/TC/AppData/Roaming/baidu/BaiduNetdisk/users/9d1b10e4f12cb23e9161b43d15c5182e/BaiduYunCacheFileV0.db
+
+filesource <- "c:/Users/TC/AppData/Roaming/baidu/BaiduNetdisk/users/9d1b10e4f12cb23e9161b43d15c5182e/BaiduYunCacheFileV0.db"
+
+filesource2 <- "../data/BaiduYunCacheFileV0.db"
+
+con <- dbConnect(RSQLite::SQLite(),dbname=filesource)
+
+dbListTables(con)
+
+mytbl_all <- dbGetQuery(con,"select * from cache_file")
+
+mytbl_owarai <- mytbl_all %>%
+  filter(grepl("owarai",parent_path))
+
+```
+
+
+
+
+## add year 
+
+```{r addyear}
+library(stringr)
+
+mytbl_owarai.year <- mytbl_owarai %>%
+  filter(file_size > 0) %>%
+  mutate(year=str_extract(server_filename,"[0-9]{6,8}")) %>%
+  mutate(year2=str_extract(server_filename,"[0-9]{2,4}[-\\.][0-9]{1,2}[-\\.][0-9]{1,2}")) %>%
+  mutate(year3=ifelse(is.na(year),year2,year))
+
+```
+
+```{r}
+table(is.na(mytbl_owarai.year$year),is.na(mytbl_owarai.year$year3))
+mytbl_owarai.year %>% filter(is.na(year),is.na(year3)) -> mytbl_owarai.year_noyear
+
+```
+
+
+
+```{r adddate}
+library(lubridate)
+## good, this is working
+mytbl_owarai.year$airdate <- parse_date_time(x=mytbl_owarai.year$year3,
+                 orders=c("ymd","y-m-d","y.m.d","Ymd"))
+```
+
+
+## add bangumi
+```{r}
+
+## godtongue
+
+mytbl_owarai.year.bangumi <-
+  mytbl_owarai.year %>%
+  mutate(bangumi = ifelse(grepl("神舌",parent_path),"神舌",NA)) %>%
+   mutate(bangumi = ifelse(grepl("ゴッドタン",server_filename),"神舌",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("女主播的惩罚",parent_path),"女主播的惩罚",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("月耀夜",parent_path),"月曜夜未央",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("真的假的",parent_path),"真的假的TV",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("黄金传说",parent_path),"黄金传说",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("黄金传说",parent_path),"黄金传说",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("ametalk",parent_path,ignore.case = TRUE),"ametalk",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("ametalk",server_filename,ignore.case = TRUE),"ametalk",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("黄金传说",parent_path),"黄金传说",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("男女纠察队",parent_path),"伦敦之心",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("London hearts",parent_path),"伦敦之心",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("有吉反省会",parent_path),"有吉反省会",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("ロンドンハーツ",server_filename),"伦敦之心",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("今夜比一比",parent_path),"今夜比一比",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("不准笑",parent_path),"不准笑",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("水曜日的DOWN TOWN",parent_path),"水曜日的DOWN TOWN",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("hoko all",parent_path,ignore.case = TRUE),"矛盾",bangumi)) %>%
+    mutate(bangumi = ifelse(is.na(bangumi),"其他",bangumi)) 
+  
+
+mytbl_owarai.year.bangumi.title_en <-
+  mytbl_owarai.year.bangumi %>%
+  mutate(title_en = ifelse(grepl("神舌",parent_path),"godtongue",NA)) %>%
+   mutate(title_en = ifelse(grepl("ゴッドタン",server_filename),"godtongue",title_en)) %>%
+    mutate(title_en = ifelse(grepl("女主播的惩罚",parent_path),"announcer",title_en)) %>%
+    mutate(title_en = ifelse(grepl("月耀夜",parent_path),"monday_lateshow",title_en)) %>%
+    mutate(title_en = ifelse(grepl("真的假的",parent_path),"honmadekaTV",title_en)) %>%
+    mutate(title_en = ifelse(grepl("黄金传说",parent_path),"goldlegend",title_en)) %>%
+    mutate(title_en = ifelse(grepl("黄金传说",parent_path),"goldlegend",title_en)) %>%
+    mutate(title_en = ifelse(grepl("ametalk",parent_path,ignore.case = TRUE),"ametalk",title_en)) %>%
+    mutate(title_en = ifelse(grepl("ametalk",server_filename,ignore.case = TRUE),"ametalk",title_en)) %>%
+    mutate(title_en = ifelse(grepl("黄金传说",parent_path),"goldlegend",title_en)) %>%
+    mutate(title_en = ifelse(grepl("男女纠察队",parent_path),"lonha",title_en)) %>%
+    mutate(title_en = ifelse(grepl("London hearts",parent_path),"lonha",title_en)) %>%
+    mutate(title_en = ifelse(grepl("有吉反省会",parent_path),"ariosh_meeting",title_en)) %>%
+    mutate(title_en = ifelse(grepl("ロンドンハーツ",server_filename),"lonha",title_en)) %>%
+    mutate(title_en = ifelse(grepl("今夜比一比",parent_path),"konya",title_en)) %>%
+    mutate(title_en = ifelse(grepl("不准笑",parent_path),"waraideikenai",title_en)) %>%
+    mutate(title_en = ifelse(grepl("水曜日的DOWN TOWN",parent_path),"weddowntown",title_en)) %>%
+    mutate(title_en = ifelse(grepl("hoko all",parent_path,ignore.case = TRUE),"hoko",title_en)) %>%
+    mutate(title_en = ifelse(is.na(title_en),"other",title_en)) %>%  
+  
+  tbl_df()
+
+
+
+```
+
+```{r}
+## remove <16mb
+mytbl_owarai.year.bangumi.title_en.filtered.deduplicated <-
+  mytbl_owarai.year.bangumi.title_en %>% filter(log2(file_size)> 24 ) %>%
+  group_by(md5) %>% 
+  arrange(bangumi, desc(airdate)) %>%
+  filter(row_number() ==1) %>%
+  ungroup()
+  
+# mytbl_owarai.year.bangumi %>% filter(!grepl(".jpg",server_filename))
+
+## some test
+
+summ.tbl <-
+  table(mytbl_owarai.year.bangumi.title_en.filtered.deduplicated$bangumi) %>% as.data.frame() %>% arrange(desc(Freq)) 
+
+mytbl_owarai.year.bangumi %>% filter(is.na(bangumi)) ->tmp.nobangumi
+
+
+```
+
+
+```{r deduplicate}
+
+
+# mytbl_owarai.year.bangumi.filtered.deduplicated <-
+#   mytbl_owarai.year.bangumi.filtered %>% 
+#   group_by(md5) %>% 
+#   arrange(bangumi, desc(year4)) %>%
+#   filter(row_number() ==1) %>%
+#   ungroup()
+tmp <- 
+  mytbl_owarai.year.bangumi.title_en %>%
+  filter(log2(file_size)> 24 ) %>%
+  group_by(md5) 
+
+# %>% 
+#   mutate(n=group_size(.)) %>%
+
+
+
+```
+
+
+## output 
+
+```{r eval=FALSE}
+save(mytbl_owarai.year.bangumi.title_en.filtered.deduplicated,file =paste0("C:/Users/TC/GIT/lhdata/data/mytbl_owarai.year.bangumi.title_en.filtered.deduplicated",format(Sys.time(),"%y%m%d"),".rda") )
+
+#load("C:/Users/TC/GIT/lhdata/data/mytbl_owarai.year.bangumi.filtered.deduplicated.rda")
+```
+
+
+```{r eval=FALSE}
+## load this one
+load("C:/Users/TC/GIT/lhdata/data/mytbl_owarai.year.bangumi.title_en.filtered.deduplicated171013.rda")
+```
+
+## summary
+
+final file:
+`"C:/Users/TC/GIT/lhdata/data/mytbl_owarai.year.bangumi.title_en.filtered.deduplicated",format(Sys.time(),"%y%m%d"),".rda"`
+
+useful column, temporarily: title, title_en, airdate, bangumi, md5 
+
+next should run lh_test2 to generate posts
+
+

@@ -1,0 +1,55 @@
+---
+title: "bilibiliapi"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## test
+
+
+```{r}
+## i don't know what this is
+
+url = "http://www.bilibili.com/index/ding-count.json"
+
+library(jsonlite)
+
+test <- jsonlite::fromJSON(url)
+```
+
+```{r aid2cid}
+## ok it's working
+## https://gist.github.com/mimosa/de0534f98344c669e79a473b1213275b
+
+
+getcid <-function(aid=NA){
+ 
+  url2 = paste0("http://www.bilibili.com/widget/getPageList?aid=",aid)
+  test2 <- jsonlite::fromJSON(url2)
+  return(test2$cid)
+
+}
+
+```
+
+```{r}
+tmp <-getcid(15112800)
+```
+
+
+```{r search}
+## difficult to extract useful info, try another thing
+
+# https://search.bilibili.com/ajax_api/video?keyword=%E4%BC%A6%E6%95%A6%E4%B9%8B%E5%BF%83%E5%AD%97%E5%B9%95%E7%BB%84&page=20&order=totalrank&_=1507977440706
+
+url3 = "https://search.bilibili.com/ajax_api/video?keyword=%E4%BC%A6%E6%95%A6%E4%B9%8B%E5%BF%83%E5%AD%97%E5%B9%95%E7%BB%84&page=20&order=totalrank&_=1507977440706"
+
+test3 <- jsonlite::fromJSON(url3)
+
+```
+
+
+

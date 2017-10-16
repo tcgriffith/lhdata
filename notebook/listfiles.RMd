@@ -1,0 +1,99 @@
+---
+title: "screen_capture"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+
+
+```{r}
+
+files <- list.files(path="z:/thunderdl/godtongue/",recursive = TRUE,full.names = TRUE)
+```
+
+
+
+
+```{r test}
+source("../R/getyearsdf.R")
+
+filenames <- basename(files)
+
+df <-
+  getyearsdf(filenames) %>%
+  tbl_df
+
+
+
+
+
+```
+
+
+```{r}
+
+cmds <-
+paste0("ffmpeg -y -ss 00:00:50 -i '", files,"' -vframes 1 -q:v 2 -vf scale=480:-1 ",paste0(" 'z:/thunderdl/godtongue/godtongue_",df$date,".jpg'"))
+
+
+filepath = paste0("z:/thunderdl/godtongue/generatecaptures.sh"
+)
+fileConn <- file(filepath)
+writeLines(cmds, fileConn,useBytes = TRUE)
+close(fileConn)
+
+
+
+```
+
+```{r}
+
+df <-
+  df %>%
+  mutate(jpgname=paste0("godtongue_",date,".jpg")) 
+
+
+
+```
+
+```{r uploadimg}
+
+
+df2 <- data.frame(jpgs=list.files("z:/thunderdl/godtongue/",pattern="*.jpg$",full.names = TRUE),stringsAsFactors = FALSE)
+
+df2$imgur=character(nrow(df2))
+
+
+for (i in 51:nrow(df2)){
+  df2$imgur[i] <- knitr::imgur_upload(df2$jpgs[i],key= "de1d2e404de0db5")
+}
+
+
+```
+
+```{r}
+
+## bad request, 51:55 not uploaded
+for (i in 51:nrow(df2)){
+  df2$imgur[i] <- knitr::imgur_upload(df2$jpgs[i],key= "9f3460e67f308f6")
+  message(paste0(df2$jpgs," uploaded"))
+}
+```
+
+```{r}
+save(df2,file="../data/df.godtongue.imgur.rda")
+```
+
+```{r}
+df2$jpgname=basename(df2$jpgs)
+
+df.merged <- df %>%
+  left_join(df2 %>% select(jpgname,imgur)) %>%
+  mutate(airdate=lubridate::parse_date_time(date,orders="ymd"))
+```
+
+

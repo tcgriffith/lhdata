@@ -1,0 +1,399 @@
+---
+title: "bilibili_api2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r ids}
+## 九条 5382023
+## 莱姆籽 207626
+## 电信 2301165
+## 来一发 26666749
+## 小山君 97990
+
+mid.df <- data.frame(mids = c(5382023,
+                              207626,
+                              2301165,
+                              26666749,
+                              97990),
+                     author = c("九條",
+                                "莱姆籽",
+                                "天翼羽魂",
+                                "来一发就走字幕组",
+                                "小山君"))
+
+```
+
+
+
+```{r dl_func}
+## url=https://space.bilibili.com/ajax/member/getSubmitVideos?mid=5382023&pagesize=30&tid=0&page=1&keyword=&order=pubdate
+
+
+
+getvlist <- function(mid, kw = "") {
+  fpurl = paste0(
+    "https://space.bilibili.com/ajax/member/getSubmitVideos?mid=",
+    mid,
+    "&pagesize=100&tid=0&page=1&keyword=",
+    kw,
+    "&order=pubdate"
+  )
+  
+  test2 <- jsonlite::fromJSON(fpurl)
+  
+  vlist.df <- test2$data$vlist
+  message(test2$data$pages)
+  if (test2$data$pages > 1)
+    {
+    for (i in 2:test2$data$pages) {
+      Sys.sleep(1)
+      aurl = paste0(
+        "https://space.bilibili.com/ajax/member/getSubmitVideos?mid=",
+        mid,
+        "&pagesize=100&tid=0&page=",
+        i,
+        "&keyword=",
+        kw,
+        "&order=pubdate"
+      )
+      ajson <- jsonlite::fromJSON(aurl)
+      avlist <- ajson$data$vlist
+      vlist.df <- rbind(vlist.df, avlist)
+    }
+    
+    
+  }
+  return(vlist.df)
+}
+
+```
+
+```{r eval=FALSE}
+## run this to update
+
+vlist.1 <- getvlist(mid.df$mids[1])
+## laimuzi
+vlist.2 <- getvlist(mid.df$mids[2],kw="伦敦之心")
+## dianxing
+vlist.3 <- getvlist(mid.df$mids[3],kw="伦敦之心")
+
+## laiyifa
+
+vlist.4 <- getvlist(mid.df$mids[4])
+## and daxili
+vlist.5 <- getvlist(mid.df$mids[5])
+```
+
+
+```{r}
+vlist.lh <- rbind(vlist.1,vlist.2,vlist.3)
+
+vlist.lh$zmz="伦敦之心字幕组"
+
+vlist.4$zmz="来一发就走字幕组"
+
+vlist.5$zmz="大喜利王字幕组"
+
+
+vlist.all <- rbind(vlist.lh,vlist.4,vlist.5)
+```
+
+```{r anno}
+
+vlist.min <- vlist.all %>%
+  select(pic,description,title,author,aid,zmz)
+
+```
+
+
+```{r}
+
+addbangumi <- function(vector){
+  library(dplyr)
+  tmp <- data.frame(vector=vector,stringsAsFactors = FALSE)
+  tmp <-
+    tmp %>%
+  mutate(bangumi = ifelse(grepl("神舌",vector),"神舌",NA)) %>%
+     mutate(bangumi = ifelse(grepl("女主播的惩罚",vector),"女主播的惩罚",bangumi)) %>%
+     mutate(bangumi = ifelse(grepl("月曜夜",vector),"月曜夜未央",bangumi)) %>%
+     mutate(bangumi = ifelse(grepl("真的假的",vector),"真的假的TV",bangumi)) %>%
+     mutate(bangumi = ifelse(grepl("黄金传说",vector),"黄金传说",bangumi)) %>%
+     mutate(bangumi = ifelse(grepl("ametalk",vector,ignore.case = TRUE),"ametalk",bangumi)) %>%
+     mutate(bangumi = ifelse(grepl("男女纠察队",vector),"伦敦之心",bangumi)) %>%
+     mutate(bangumi = ifelse(grepl("London heart",vector,ignore.case = TRUE),"伦敦之心",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("Londonheart",vector,ignore.case = TRUE),"伦敦之心",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("都市传说",vector,ignore.case = TRUE),"都市传说",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("闲聊007",vector),"闲聊007",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("不准笑",vector),"24小时不准笑",bangumi)) %>%
+     mutate(bangumi = ifelse(grepl("有吉反省会",vector),"有吉反省会",bangumi)) %>%
+     mutate(bangumi = ifelse(grepl("今夜比一比",vector),"今夜比一比",bangumi)) %>%
+     mutate(bangumi = ifelse(grepl("星期三的市中心",vector),"水曜日的DOWNTOWN",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("有吉之壁",vector),"有吉之壁",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("行列法律",vector),"行列法律相谈所",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("IPPON",vector),"IPPON",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("ENGEI",vector),"ENGEI",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("红白",vector),"红白模仿歌合战",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("gaki使",vector),"gaki使",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("全员逃走中",vector),"全员逃走中",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("整人大赏",vector),"整人大赏",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("洒落主义",vector),"洒落主义",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("中居之窗",vector),"中居之窗",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("娱乐之神",vector),"娱乐之神",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("内村照",vector),"内村照",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("海王星.*rola",vector),"海王星rola的爆笑归纳",bangumi)) %>%
+    mutate(bangumi = ifelse(is.na(bangumi),"其他",bangumi))  %>%
+    
+    
+  tbl_df()
+  
+  return(tmp$bangumi)
+  }
+
+```
+
+
+```{r}
+vlist.min.addzmz.bangumi <-
+  vlist.min %>%
+  mutate(bangumi=addbangumi(vector = title))
+
+table(is.na(vlist.min.addzmz.bangumi$bangumi)) %>% as.data.frame()
+
+vlist.nobangumi <- vlist.min.addzmz.bangumi %>% filter(is.na(bangumi))
+  
+```
+
+
+## tags
+```{r tags}
+
+gettags <- function(aid = 3653764) {
+  Sys.sleep(0.3)
+  url = "https://api.bilibili.com/x/tag/archive/tags?callback=jQuery17208589050249181278_1507985829525"
+  url.aid = paste0(url, "&aid=", aid)
+  test.tags <- jsonlite::fromJSON(url.aid)
+  tagv <- paste(test.tags$data$tag_name,collapse=";")
+  return(tagv)
+}
+
+## test
+tags <- gettags(3570594)
+
+tags
+
+```
+
+### tests
+```{r eval=FALSE}
+## test tag, worked
+
+library(dplyr)
+tmp2 <-
+  vlist.df%>%
+  head(5)
+
+tmp2$tags=NA
+
+for (i in 1:nrow(tmp2)){
+  tmp2$tags[i] = gettags(tmp2$aid[i])
+  
+}
+
+```
+
+
+```{r eval=FALSE}
+a <- list("a","b")
+
+b <- list("a","b","C")
+
+c <- data.frame(a=a,b=b,c="a")
+```
+
+
+
+## deploy posts
+
+```{r eval=FALSE}
+##add tags
+
+vlist.min.addzmz.bangumi$tags=NA
+
+for (i in 1:nrow(vlist.min.addzmz.bangumi)){
+  vlist.min.addzmz.bangumi$tags[i] =gettags(vlist.min.addzmz.bangumi$aid[i])
+  message(paste0(i," tags get!"))
+}
+
+```
+
+```{r eval=FALSE}
+save(vlist.min.addzmz.bangumi,file=paste0("../data/vlist.min.addzmz.bangumi",Sys.Date(),".rda"))
+save(vlist.all,file=paste0("../data/vlist.all",Sys.Date(),".rda"))
+
+```
+
+```{r}
+load("../data/vlist.min.addzmz.bangumi2017-10-15.rda")
+```
+
+
+```{r}
+requiredcol <-c(
+    "title",
+    "title_en",
+    "title2",
+    "author",
+    "airdate",
+    "bangumi",
+    "md5",
+    "imgsrc"
+  )
+
+## //i2.hdslb.com/bfs/archive/7a4e8f57b5811da57aa8ebe1999c2703985e5d89.jpg
+
+```
+
+
+```{r aid2cid}
+## ok it's working
+## https://gist.github.com/mimosa/de0534f98344c669e79a473b1213275b
+
+
+getcid <-function(aid=NA){
+ 
+  url2 = paste0("http://www.bilibili.com/widget/getPageList?aid=",aid)
+  
+  req <- curl::curl_fetch_memory(url2)
+  
+  if (req$status_code==200){
+      test2 <- jsonlite::fromJSON(url2)
+      return(test2$cid)
+  }
+  else{
+    message(paste0("error ",req$status_code," NA returned"))
+    return(NA)
+  }
+
+
+}
+
+```
+
+
+
+
+```{r}
+library(dplyr)
+df <- vlist.min.addzmz.bangumi
+
+
+df.norm <- df %>%
+  mutate(title=ifelse(grepl("^【.*】",title),gsub("^【.*】.*?","",title),title)) %>%
+  mutate(title_en=aid) %>%
+  mutate(title_2=NA) %>%
+  mutate(airdate=getyearsdf(title)) %>%
+  mutate(imgsrc=paste0("http:",pic)) %>%
+  mutate(description=paste0("# 简介  \n",description))
+```
+
+```{r}
+
+```
+
+
+```{r test}
+if(!dir.exists("./exp2"))dir.create("./exp2")
+
+source("../R/generate_posts.R")
+
+generate_posts(df.norm %>% head(5),foldpath = "./exp2")
+```
+
+
+
+```{r runhere}
+# df.norm.cid <-
+#   df.norm
+# 
+# df.norm.cid$cid=NA
+# 
+# for(i in 1:nrow(df.norm.cid)){
+#   df.norm.cid$cid[i]=getcid(df.norm.cid$aid[i])
+#  # Sys.sleep(0.4)
+#   message(paste0(i," get"))
+# }
+
+
+
+if(!dir.exists("C:/Users/TC/GIT/owaraisite/content/post/"))dir.create("C:/Users/TC/GIT/owaraisite/content/post/")
+source("../R/generate_posts.R")
+generate_posts(df.norm.cid %>% head(5),foldpath = "C:/Users/TC/GIT/owaraisite/content/post/")
+```
+
+
+```{r rehost_imgs}
+if(!dir.exists("./imgs"))dir.create("./imgs")
+if(!dir.exists("./imgs_resize"))dir.create("./imgs_resize")
+
+#df.norm.cid$imgur=NA
+
+#for (i in 1:5){
+for (i in 1:nrow(df.norm.cid)){
+  
+  if(!is.na(df.norm.cid$imgur[i])) next
+  
+  curl::curl_download(
+    paste0("http:",df.norm.cid$pic[i]),
+    destfile = paste0("./imgs/",basename(df.norm.cid$pic[i])))
+  Sys.sleep(2)
+  system(paste0("ffmpeg -i ./imgs/",basename(df.norm.cid$pic[i])," -vf scale=480:-1 ./imgs_resize/",basename(df.norm.cid$pic[i])))
+  Sys.sleep(4)
+  df.norm.cid$imgur[i] <-
+  knitr::imgur_upload(file=paste0("./imgs_resize/",basename(df.norm.cid$pic[i]))) -> testup
+  message(paste0(i," finished"))
+  Sys.sleep(2)
+}
+
+
+```
+
+```{r eval=FALSE}
+#imgur test
+message(Sys.time())
+knitr::imgur_upload(file=paste0("./imgs_resize/",basename(df.norm.cid$pic[1])))
+
+```
+
+```{r}
+nrow(df.norm.cid %>% filter(!is.na(imgur)))
+```
+
+
+```{r eval=FALSE}
+save(df.norm.cid,file="../data/df.norm.cid.515done.rda")
+```
+
+```{r}
+df.norm.cid$bangumi=ifelse(is.na(df.norm.cid$bangumi),"其他",df.norm.cid$bangumi)
+```
+
+
+## deploy
+```{r }
+
+if(!dir.exists("C:/Users/TC/GIT/owaraisite/content/post/"))dir.create("C:/Users/TC/GIT/owaraisite/content/post/")
+source("../R/generate_posts.R")
+generate_posts(df.norm.cid %>% filter(!is.na(imgur)),foldpath = "C:/Users/TC/GIT/owaraisite/content/post/")
+```
+
+
+```{r resizetest,eval=FALSE}
+system("ffmpeg -i ./imgs/0ee3639c4ab45b78ebd65b0e31a152cb96b52b91.jpg -vf scale=480:-1 ./imgs/0ee3639c4ab45b78ebd65b0e31a152cb96b52b91_w480.jpg")
+```
+

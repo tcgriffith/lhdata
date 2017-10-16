@@ -1,0 +1,347 @@
+﻿---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+
+## test
+
+```{r eval=FALSE}
+library(yaml)
+
+```
+
+```{r eval=FALSE}
+yaml <- yaml::as.yaml(list(foo=1:10, bar=c("test1", "test2")),indent = 4,indent.mapping.sequence = TRUE)
+
+yaml <- rbind("---",yaml,"---")
+yaml
+```
+
+
+```{r eval=FALSE}
+
+test <- as.yaml(data.frame(a=1:10, b=letters[1:10], c=11:20),indent=4,indent.mapping.sequence = TRUE)
+
+
+fileConn<-file("output.txt")
+writeLines(yaml, fileConn)
+close(fileConn)
+
+```
+
+
+```{r eval=FALSE}
+file.show("output.txt")
+```
+```{r eval=FALSE}
+generate_text <- function(){
+  a <-"aaaa"
+  b <- "bbbb"
+  writeLines(c(a,b))
+}
+```
+
+## test
+
+```{r}
+## load this one
+load("C:/Users/TC/GIT/lhdata/data/mytbl_owarai.year.bangumi.title_en.filtered.deduplicated171013.rda")
+```
+
+```{r eval=FALSE}
+load("C:/Users/TC/GIT/lhdata/data/mytbl_owarai.year.bangumi.filtered.deduplicated.rda")
+```
+
+```{r fix, eval=FALSE}
+## deprecated
+mytbl_owarai.year.bangumi.filtered.deduplicated.fix <- 
+  mytbl_owarai.year.bangumi.filtered.deduplicated %>%
+  mutate(bangumi=ifelse(bangumi=="月耀夜","月曜夜未央",bangumi))
+
+save(mytbl_owarai.year.bangumi.filtered.deduplicated.fix,file="C:/Users/TC/GIT/lhdata/data/mytbl_owarai.year.bangumi.filtered.deduplicated.fix.rda")
+
+```
+
+
+
+```{r getdftrans, eval=FALSE}
+
+## unstable, deprecated
+
+
+  # min_names <- c(
+  #   "title",
+  #   "title_en",
+  #   "author",
+  #   "airdate",
+  #   "bangumi"
+  # )
+
+data.frame(bangumi=unique(df$bangumi)) -> df_bgm
+
+title_en <-c(
+  "ametalk",
+  "waraideikenai",
+  "goldlegend",
+  "konya",
+  "lonha",
+  "hoko",
+  "announcer",
+  "others",
+  "godtongue",
+  "weddowntown",
+  "ariosh_meeting",
+  "monday_lateshow",
+  "honmadekaTV"
+)
+
+df_bgm <-cbind(df_bgm,title_en)
+
+df_bgm
+
+
+```
+
+```{r anno}
+## generate title, author, 
+
+
+#df <- mytbl_owarai.year.bangumi.filtered.deduplicated.fix
+df <- mytbl_owarai.year.bangumi.title_en.filtered.deduplicated
+## used to generate posts
+df.trans <- df %>%
+  mutate(title=tools::file_path_sans_ext(server_filename)) %>%
+  mutate(author=ifelse(grepl("^【(.*)】.*$",server_filename),gsub("^【(.*?)】.*","\\1",server_filename),NA)) %>%
+  mutate(author=ifelse(grepl("伦敦之心",author),"伦敦之心字幕组",author)) %>%
+  mutate(author=ifelse(is.na(author),"伦敦之心字幕组",author))
+ # mutate(airdate=year4) %>%
+  #left_join(df_bgm) %>%
+#  select(title,title_en,author,airdate,bangumi,parent_path)
+  
+
+
+```
+
+
+## generate posts
+
+
+### goldtongue
+
+```{r godtongue}
+## add title2
+df.goldtongue <-
+  df.trans %>%
+  filter(title_en == "godtongue") %>%
+  mutate(title2 = ifelse(
+    grepl(".*/神舌/(.*)/$", parent_path),
+    gsub(".*/神舌/(.*)/$", "\\1", parent_path),
+    NA
+  )) %>%
+  arrange(parent_path) %>%
+  mutate(title2 = ifelse(
+    grepl("マジ歌",server_filename),
+    "严肃歌曲",
+    title2
+  )) %>%
+    mutate(title2 = ifelse(
+    grepl("キス我慢",server_filename),
+    "kiss忍耐",
+    title2
+  )) %>%
+    mutate(title2 = ifelse(
+    grepl("暗記",server_filename),
+    "禁欲暗记王",
+    title2
+  )) %>%
+    mutate(title2 = ifelse(
+    grepl("コンビ愛|相方愛",server_filename),
+    "相方爱",
+    title2
+  )) %>%
+    mutate(title2 = ifelse(
+    grepl("イチャ漫",server_filename),
+    "调情漫才",
+    title2
+  )) %>%
+    mutate(title2 = ifelse(
+    grepl("マジ嫌い",server_filename),
+    "真的讨厌5.1",
+    title2
+  )) %>%
+    mutate(title2 = ifelse(
+      is.na(title2),
+    "其他合集",
+    title2
+  ))
+
+
+
+df.tmp <- df.goldtongue %>% select(server_filename,title2,author)
+
+table((df.goldtongue$title2))
+
+
+table(is.na(df.goldtongue$title2))
+
+```
+
+```{r testmap,eval=FALSE}
+df.goldtongue %>%
+  filter(is.na(title2)) %>%
+  filter(grepl("マジ嫌い", server_filename)) %>%
+  select(server_filename)
+```
+
+
+
+```{r testgenerateposts, eval= FALSE}
+if(!dir.exists("./exp")){
+  dir.create("./exp")
+}
+source("../R/generate_posts.R")
+
+df.goldtongue.addimg <- df.goldtongue %>%
+  mutate(imgsrc="aaa")
+
+generate_posts(df.goldtongue.addimg %>% head(n=5),foldpath = "./exp")
+
+```
+
+```{r useanno, eval=FALSE}
+read.csv(file="../data/df.godtongue.171013_anno.csv",sep = ",",stringsAsFactors = FALSE) ->df.godtongue.anno
+
+df.godtongue.anno$airdate <- as.Date(df.godtongue.anno$airdate)
+
+
+```
+
+
+```{r eval=FALSE}
+library(readxl)
+df_godtongue_anno <-
+  read_excel("C:/Users/TC/Downloads/a.xlsx", 
+  col_types = c("text", "text", "text",
+                "text", "text", "date", "text", "text"))
+
+
+```
+
+
+## addimgur
+
+```{r}
+load("../data/df.godtongue.imgur.rda")
+
+source("../R/getyearsdf.R")
+
+df2$airdate <-getyearsdf(df2$jpgs)
+
+df2.hasimgur <- df2 %>% filter(grepl("imgur",imgur)) %>% select(airdate,imgur)
+
+
+df.goldtongue.addimgur <-
+  df.goldtongue %>%
+  left_join(df2.hasimgur) %>%
+  rename(imgsrc=imgur)
+
+
+```
+
+
+
+## generate use this
+
+```{r runhere}
+if(!dir.exists("C:/Users/TC/GIT/owaraisite/content/post/"))dir.create("C:/Users/TC/GIT/owaraisite/content/post/")
+
+source("../R/generate_posts.R")
+
+generate_posts(df.goldtongue.addimgur %>% filter(!is.na(imgsrc)),foldpath = "C:/Users/TC/GIT/owaraisite/content/post/")
+```
+
+
+## rewrite asyaml
+
+
+
+```{r eval=FALSE}
+test <- df.goldtongue[1,]
+
+title <- test$title
+author <-test$author
+airdate <- test$airdate
+md5_short <- stringr::str_sub(test$md5,1,8)
+title2 <-test$title2
+bangumi <-test$bangumi
+title_en <-test$title_en
+
+
+
+  meta <- list(
+    title=ifelse(!is.na(title2),paste(bangumi,title2,format(airdate,"%y%m%d")),title),
+    author=author,
+    date=format(Sys.time(),"%Y-%m-%d %H:%M:%S"),
+    airdate=format(airdate,"%y%m%d"),
+    slug=paste0(format(Sys.Date(),"%Y-%m-%d"),"_",title_en,"_",format(airdate,"%y%m%d"),"_",md5_short),
+    categories=c(author,bangumi),
+    tags=title2,
+    description=title,
+    draft="true"
+  )
+# 
+# 
+# as_yaml <- function(list,indent=2){
+  
+#   
+#   
+# }
+```
+
+```{r test_asyaml eval=FALSE}
+
+
+
+as_yaml <- function(list,indent=2,is.meta=TRUE) {
+  
+  str <- ""
+  indentsp <- paste0(rep(" ", indent), collapse = "")
+  
+  for (aname in names(meta)) {
+    str <- paste0(str, aname, ": ")
+    
+    if (length(meta[[aname]]) == 1) {
+      str <- paste0(str, meta[[aname]], "  \n")
+    }
+    else{
+      str <- paste0(str, "\n")
+      substr <- paste0(indentsp, "- ", meta[[aname]], collapse = "\n")
+      str <- paste0(str, substr, "\n")
+    }
+  }
+  
+  if (is.meta){
+    str <- paste0("---\n",str,"---\n")
+  }
+  print(str)
+  return(str)
+  
+
+}
+
+```
+
+```{r eval=FALSE}
+ mystr <- as_yaml(meta)
+
+  fileConn <- file("output.txt")
+  writeLines(mystr, fileConn)
+  close(fileConn)
+```
+
