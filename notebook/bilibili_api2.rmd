@@ -27,6 +27,13 @@ mid.df <- data.frame(mids = c(5382023,
                                 "来一发就走字幕组",
                                 "小山君"))
 
+saveRDS(object = mid.df,file="../data/bilibili_mid_list.rds")
+
+
+```
+
+```{r}
+mid.df
 ```
 
 
@@ -159,9 +166,11 @@ addbangumi <- function(vector){
 
 
 ```{r}
+source("../R/getbangumi.R")
+
 vlist.min.addzmz.bangumi <-
   vlist.min %>%
-  mutate(bangumi=addbangumi(vector = title))
+  mutate(bangumi=getbangumi(vector = title))
 
 table(is.na(vlist.min.addzmz.bangumi$bangumi)) %>% as.data.frame()
 
@@ -279,8 +288,6 @@ getcid <-function(aid=NA){
     message(paste0("error ",req$status_code," NA returned"))
     return(NA)
   }
-
-
 }
 
 ```
@@ -291,6 +298,7 @@ getcid <-function(aid=NA){
 ```{r}
 library(dplyr)
 df <- vlist.min.addzmz.bangumi
+
 
 
 df.norm <- df %>%

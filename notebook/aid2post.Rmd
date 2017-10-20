@@ -1,0 +1,84 @@
+---
+title: "aid2post"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+root <- rprojroot::find_rstudio_root_file()
+```
+
+## R Markdown
+
+
+```{r}
+aid = 2441580
+
+```
+
+```{r}
+source("../R/api_aid2cid.R")
+source("../R/api_getbilitags.R")
+source("../R/getbangumi.R")
+source("../R/getyearsdf.R")
+source("../R/api_getuploads.R")
+
+#source(paste0(root"/R/"))
+```
+
+```{r}
+api_getavinfo <-function(aid=NA){
+  url2 = paste0("http://www.bilibili.com/widget/getPageList?aid=",aid)
+  req <- curl::curl_fetch_memory(url2)
+  if (req$status_code==200){
+    test2 <- jsonlite::fromJSON(url2)
+    return(test2)
+  }
+  else{
+    message(paste0("error ",req$status_code," NA returned"))
+    return(NA)
+  }
+}
+```
+
+```{r}
+ api_getavinfo(aid)
+```
+
+```{r}
+urltest = paste0("http://www.bilibili.com/video/av",aid)
+
+req <- curl::curl_fetch_memory(urltest)
+
+```
+
+
+```{r}
+a <- readLines("C:/Users/TC/GIT/lhdata/data/view-source_https___www.bilibili.com_video_av2441580_.txt",encoding = "UTF-8")
+
+curl("http://www.bilibili.com/video/av2441580/index.html",encoding="UTF-8")
+```
+
+
+
+
+```{r}
+mid.list <- readRDS(file="../data/bilibili_mid_list.rds")
+```
+
+```{r}
+
+# for ( i in 1:nrow(mid.list)){
+#   mid.list$mids[i]
+#   
+# }
+
+tmp <- api_getuploads(mid.list$mids[1])
+
+```
+
+```{r}
+x <- matrix(rnorm(309 * 148), nrow = 309)
+```
+
+

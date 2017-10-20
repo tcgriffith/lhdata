@@ -7,9 +7,8 @@
 #' @export
 #'
 #' @examples
-generate_posts <- function(mydf,foldpath="."){
+aid2post <- function(aid,foldpath="."){
 
-## problems
   requiredcol <-c(
     "title",
     "title_en",
@@ -17,16 +16,18 @@ generate_posts <- function(mydf,foldpath="."){
     "author",
     "airdate",
     "bangumi",
-#    "md5",
+    #    "md5",
     "imgsrc"
   )
-## forgetit we don't need md5
+
+
+
   df <-mydf
   if("md5" %in% names(mydf)){
-     df$md5_short=stringr::str_sub(df$md5,1,8)
+    df$md5_short=stringr::str_sub(df$md5,1,8)
   }
 
-
+  df <- mydf
 
   for (i in 1:nrow(df)) {
     text <-
@@ -36,15 +37,15 @@ generate_posts <- function(mydf,foldpath="."){
         author = unique(list(df$zmz[i],df$author[i])),
         airdate = df$airdate[i],
         bangumi = df$bangumi[i],
-     #   md5_short = df$md5_short[i],
+        #   md5_short = df$md5_short[i],
         title2 = ifelse("title2" %in% colnames(df), df$title2[i], NA),
         tags=df$tags[i]
 
       )
 
- #   message(text)
+    #   message(text)
 
- #   message(stringr::str_split(df$tags[i],";"))
+    #   message(stringr::str_split(df$tags[i],";"))
 
     text <- c(text,
               (c(
@@ -72,7 +73,6 @@ generate_posts <- function(mydf,foldpath="."){
     close(fileConn)
 
     message(paste0(filepath, " finished!"))
-
   }
 }
 
@@ -87,18 +87,18 @@ getmeta <- function(title=NA,title_en=NA,author=NA,airdate=NA,bangumi=NA,md5_sho
     bangumi=bangumi,
     date=format(Sys.Date(),"%Y-%m-%d %H:%M:%S"),
     publishdate=ifelse(is.na(airdate),lubridate::parse_date_time("19000101",orders="Y-m-d"),format(airdate,"%Y-%m-%d")),
-     slug=paste0(format(Sys.Date(),"%Y-%m-%d"),"_",format(airdate,"%y%m%d"),"_",title_en),
-     categories=unique(list(author)),
-     tags = as.list(stringr::str_split(tags,";")),
+    slug=paste0(format(Sys.Date(),"%Y-%m-%d"),"_",format(airdate,"%y%m%d"),"_",title_en),
+    categories=unique(list(author)),
+    tags = as.list(stringr::str_split(tags,";")),
     bangumis=list(bangumi),
-     description=paste0(bangumi,"&#8226;",format(airdate,"%y%m%d")),
-     weight=200000-as.numeric(format(airdate,"%y%m%d"))
+    description=paste0(bangumi,"&#8226;",format(airdate,"%y%m%d")),
+    weight=200000-as.numeric(format(airdate,"%y%m%d"))
 
- #   draft="true"
-#    description="aaa"
+    #   draft="true"
+    #    description="aaa"
 
   )
-#  message(names(mymeta))
+  #  message(names(mymeta))
 
 
   meta_yaml<- as_yaml(mymeta,indent = 2)
@@ -132,7 +132,7 @@ as_yaml <- function(list,indent=2,is.meta=TRUE) {
   if (is.meta){
     str <- paste0("---\n",str,"---\n")
   }
-#  print(str)
+  #  print(str)
   return(str)
 
 
