@@ -1,6 +1,6 @@
 #' Title getbangumi
 #'
-#' @param vector character vector containing some, usually titles, if no keywords detected, return "ÆäËû"
+#' @param vector character vector containing some, usually titles, if no keywords detected, return "å…¶ä»–"
 #'
 #' @return a vector of bangumi,
 #' @export
@@ -11,35 +11,35 @@ getbangumi <- function(vector){
   tmp <- data.frame(vector=vector,stringsAsFactors = FALSE)
   tmp <-
     tmp %>%
-    mutate(bangumi = ifelse(grepl("ÉñÉà",vector),"ÉñÉà",NA)) %>%
-    mutate(bangumi = ifelse(grepl("Å®Ö÷²¥µÄ³Í·£",vector),"Å®Ö÷²¥µÄ³Í·£",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("ÔÂê×Ò¹",vector),"ÔÂê×Ò¹Î´Ñë",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("ÕæµÄ¼ÙµÄ",vector),"ÕæµÄ¼ÙµÄTV",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("»Æ½ğ´«Ëµ",vector),"»Æ½ğ´«Ëµ",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("ç¥èˆŒ",vector),"ç¥èˆŒ",NA)) %>%
+    mutate(bangumi = ifelse(grepl("å¥³ä¸»æ’­çš„æƒ©ç½š",vector),"å¥³ä¸»æ’­çš„æƒ©ç½š",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("æœˆæ›œå¤œ",vector),"æœˆæ›œå¤œæœªå¤®",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("çœŸçš„å‡çš„",vector),"çœŸçš„å‡çš„TV",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("é»„é‡‘ä¼ è¯´",vector),"é»„é‡‘ä¼ è¯´",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("ametalk",vector,ignore.case = TRUE),"ametalk",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("ÄĞÅ®¾À²ì¶Ó",vector),"Â×¶ØÖ®ĞÄ",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("London heart",vector,ignore.case = TRUE),"Â×¶ØÖ®ĞÄ",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("Londonheart",vector,ignore.case = TRUE),"Â×¶ØÖ®ĞÄ",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("¶¼ÊĞ´«Ëµ",vector,ignore.case = TRUE),"¶¼ÊĞ´«Ëµ",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("ÏĞÁÄ007",vector),"ÏĞÁÄ007",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("²»×¼Ğ¦",vector),"24Ğ¡Ê±²»×¼Ğ¦",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("ÓĞ¼ª·´Ê¡»á",vector),"ÓĞ¼ª·´Ê¡»á",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("½ñÒ¹±ÈÒ»±È",vector),"½ñÒ¹±ÈÒ»±È",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("ĞÇÆÚÈıµÄÊĞÖĞĞÄ",vector),"Ë®ê×ÈÕµÄDOWNTOWN",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("ÓĞ¼ªÖ®±Ú",vector),"ÓĞ¼ªÖ®±Ú",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("ĞĞÁĞ·¨ÂÉ",vector),"ĞĞÁĞ·¨ÂÉÏàÌ¸Ëù",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("ç”·å¥³çº å¯Ÿé˜Ÿ",vector),"ä¼¦æ•¦ä¹‹å¿ƒ",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("London heart",vector,ignore.case = TRUE),"ä¼¦æ•¦ä¹‹å¿ƒ",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("Londonheart",vector,ignore.case = TRUE),"ä¼¦æ•¦ä¹‹å¿ƒ",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("éƒ½å¸‚ä¼ è¯´",vector,ignore.case = TRUE),"éƒ½å¸‚ä¼ è¯´",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("é—²èŠ007",vector),"é—²èŠ007",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("ä¸å‡†ç¬‘",vector),"24å°æ—¶ä¸å‡†ç¬‘",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("æœ‰å‰åçœä¼š",vector),"æœ‰å‰åçœä¼š",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("ä»Šå¤œæ¯”ä¸€æ¯”",vector),"ä»Šå¤œæ¯”ä¸€æ¯”",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("æ˜ŸæœŸä¸‰çš„å¸‚ä¸­å¿ƒ",vector),"æ°´æ›œæ—¥çš„DOWNTOWN",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("æœ‰å‰ä¹‹å£",vector),"æœ‰å‰ä¹‹å£",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("è¡Œåˆ—æ³•å¾‹",vector),"è¡Œåˆ—æ³•å¾‹ç›¸è°ˆæ‰€",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("IPPON",vector,ignore.case = TRUE),"IPPON",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("ENGEI",vector,ignore.case = TRUE),"ENGEI",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("ºì°×",vector),"ºì°×Ä£·Â¸èºÏÕ½",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("gakiÊ¹",vector),"gakiÊ¹",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("È«Ô±ÌÓ×ßÖĞ",vector),"È«Ô±ÌÓ×ßÖĞ",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("ÕûÈË´óÉÍ",vector),"ÕûÈË´óÉÍ",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("È÷ÂäÖ÷Òå",vector),"È÷ÂäÖ÷Òå",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("ÖĞ¾ÓÖ®´°",vector),"ÖĞ¾ÓÖ®´°",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("ÓéÀÖÖ®Éñ",vector),"ÓéÀÖÖ®Éñ",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("ÄÚ´åÕÕ",vector),"ÄÚ´åÕÕ",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("º£ÍõĞÇ.*rola",vector),"º£ÍõĞÇrolaµÄ±¬Ğ¦¹éÄÉ",bangumi)) %>%
-    mutate(bangumi = ifelse(is.na(bangumi),"ÆäËû",bangumi))  %>%
+    mutate(bangumi = ifelse(grepl("çº¢ç™½",vector),"çº¢ç™½æ¨¡ä»¿æ­Œåˆæˆ˜",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("gakiä½¿",vector),"gakiä½¿",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("å…¨å‘˜é€ƒèµ°ä¸­",vector),"å…¨å‘˜é€ƒèµ°ä¸­",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("æ•´äººå¤§èµ",vector),"æ•´äººå¤§èµ",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("æ´’è½ä¸»ä¹‰",vector),"æ´’è½ä¸»ä¹‰",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("ä¸­å±…ä¹‹çª—",vector),"ä¸­å±…ä¹‹çª—",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("å¨±ä¹ä¹‹ç¥",vector),"å¨±ä¹ä¹‹ç¥",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("å†…æ‘ç…§",vector),"å†…æ‘ç…§",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("æµ·ç‹æ˜Ÿ.*rola",vector),"æµ·ç‹æ˜Ÿrolaçš„çˆ†ç¬‘å½’çº³",bangumi)) %>%
+    mutate(bangumi = ifelse(is.na(bangumi),"å…¶ä»–",bangumi))  %>%
 
 
     tbl_df()

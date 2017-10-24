@@ -10,7 +10,7 @@
 #' @examples
 #' # https://www.bilibili.com/video/av2441580/
 #' api_aid2cid(2441580)
-api_aid2cid <-function(aid=NA){
+api_aid2cid <-function(aid){
   url2 = paste0("http://www.bilibili.com/widget/getPageList?aid=",aid)
   req <- curl::curl_fetch_memory(url2)
   if (req$status_code==200){

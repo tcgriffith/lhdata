@@ -1,139 +1,72 @@
-#' generate a list of post skeletons according to df
-#'
-#' @param df data frame containing basic info about df
-#' @param foldpath output dir
-#'
-#' @return vector of generated paths
-#' @export
-#'
-#' @examples
-aid2post <- function(aid,foldpath="."){
+generate_post2 <- function(df, foldpath) {
+  library(dplyr)
 
-  requiredcol <-c(
-    "title",
-    "title_en",
-    "title2",
-    "author",
-    "airdate",
-    "bangumi",
-    #    "md5",
-    "imgsrc"
+  filepath = paste0(
+    foldpath,
+    "/",
+    format(df$created[i], "%Y-%m-%d"),
+    "-",
+    format(df$airdate[i], "%y%m%d"),
+    "-",
+    df$aid[i],
+    ".md"
   )
 
-
-
-  df <-mydf
-  if("md5" %in% names(mydf)){
-    df$md5_short=stringr::str_sub(df$md5,1,8)
-  }
-
-  df <- mydf
 
   for (i in 1:nrow(df)) {
-    text <-
-      getmeta(
-        title = df$title[i],
-        title_en = df$title_en[i],
-        author = unique(list(df$zmz[i],df$author[i])),
-        airdate = df$airdate[i],
-        bangumi = df$bangumi[i],
-        #   md5_short = df$md5_short[i],
-        title2 = ifelse("title2" %in% colnames(df), df$title2[i], NA),
-        tags=df$tags[i]
-
+    df <- vlist.new.anno[i, ]
+    df.min <- vlist.new.anno[i, ] %>%
+      select(
+        title,
+        author,
+        zmz,
+        publishdate,
+        bangumi,
+        date,
+        slug,
+        description,
+        weight,
+        categories,
+        tags,
+        bangumis
       )
 
-    #   message(text)
 
-    #   message(stringr::str_split(df$tags[i],";"))
+    header <-
+      as.list(
+        df.min %>% select(
+          title,
+          author,
+          zmz,
+          publishdate,
+          bangumi,
+          date,
+          slug,
+          description,
+          weight
+        )
+      )
 
-    text <- c(text,
-              (c(
-                paste0("![](", df$imgur[i], ")\n"),
+    header$bangumis = df.min$bangumis %>% unlist() %>% as.list()
+    header$tags = df.min$tags %>% unlist() %>% as.list()
+    header$categories = df.min$categories %>% unlist() %>% as.list()
 
-                df$description[i],
-                paste0("\n  [BILIBILI](https://www.bilibili.com/video/av",df$aid[i],"/)\n"),
-                paste0('\n  <iframe src="//www.bilibili.com/html/html5player.html?cid=',df$cid[i],'&aid=',df$aid[i],'" width="100%" height="500" frameborder="0" allowfullscreen="allowfullscreen"></iframe>')
-              )))
+    text <- df$text
 
-    filepath = paste0(
-      foldpath,
-      "/",
-      format(Sys.Date(), "%Y-%m-%d"),
-      "-",
-      format(df$airdate[i], "%y%m%d"),
-      "-",
-      df$title_en[i],
-      # "_",
-      # df$md5_short[i],
-      ".md"
-    )
+#    z = c(jsonlite::toJSON(header, auto_unbox = TRUE, pretty = TRUE), text)
+    z2 = c("---",
+           yaml::as.yaml(
+             header,
+             indent = 2,
+             indent.mapping.sequence = TRUE
+           ),
+           "---",
+           text)
     fileConn <- file(filepath)
-    writeLines(text, fileConn,useBytes = TRUE)
+    writeLines(z2, fileConn)
     close(fileConn)
+    message(paste0(filepath," finished!"))
 
-    message(paste0(filepath, " finished!"))
+
   }
-}
-
-
-getmeta <- function(title=NA,title_en=NA,author=NA,airdate=NA,bangumi=NA,md5_short=NA,title2=NA,description=NA,tags=NA){
-
-  ## as.yaml crashed, fix it with as_yaml
-  mymeta <- list(
-    title=title,
-    #    title=ifelse(!is.na(title2),paste(bangumi,title2,format(airdate,"%y%m%d")),title),
-    author=author,
-    bangumi=bangumi,
-    date=format(Sys.Date(),"%Y-%m-%d %H:%M:%S"),
-    publishdate=ifelse(is.na(airdate),lubridate::parse_date_time("19000101",orders="Y-m-d"),format(airdate,"%Y-%m-%d")),
-    slug=paste0(format(Sys.Date(),"%Y-%m-%d"),"_",format(airdate,"%y%m%d"),"_",title_en),
-    categories=unique(list(author)),
-    tags = as.list(stringr::str_split(tags,";")),
-    bangumis=list(bangumi),
-    description=paste0(bangumi,"&#8226;",format(airdate,"%y%m%d")),
-    weight=200000-as.numeric(format(airdate,"%y%m%d"))
-
-    #   draft="true"
-    #    description="aaa"
-
-  )
-  #  message(names(mymeta))
-
-
-  meta_yaml<- as_yaml(mymeta,indent = 2)
-  return(meta_yaml)
-
-
-}
-
-## yaml pkg is broken in windows
-
-as_yaml <- function(list,indent=2,is.meta=TRUE) {
-
-
-  str <- ""
-  indentsp <- paste0(rep(" ", indent), collapse = "")
-
-  for (aname in names(list)) {
-    str <- paste0(str, aname, ": ")
-
-    if ((!is.list(list[[aname]]) && length(list[[aname]])==1)) {
-      str <- paste0(str,"",list[[aname]], "\n")
-    }
-    else if (is.list(list[[aname]])){
-      str <- paste0(str, "\n")
-      tmp <- unlist(list[[aname]])
-      substr <- paste0(indentsp, "- ", tmp,"", collapse = "\n")
-      str <- paste0(str, substr, "\n")
-    }
-  }
-
-  if (is.meta){
-    str <- paste0("---\n",str,"---\n")
-  }
-  #  print(str)
-  return(str)
-
-
 }

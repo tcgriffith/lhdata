@@ -1,0 +1,220 @@
+---
+title: "Untitled"
+author: "TC"
+date: "October 24, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+
+pkg_path="~/GIT/lhdata"
+post_path="~/GIT/owaraisite/content/post/"
+
+source(paste0(pkg_path,"/R/api_getuploads.R"))
+source(paste0(pkg_path,"/R/getbangumi.R"))
+source(paste0(pkg_path,"/R/getyearsdf.R"))
+source(paste0(pkg_path,"/R/api_aid2cid.R"))
+source(paste0(pkg_path,"/R/api_getbilitags.R"))
+source(paste0(pkg_path,"/R/api_upload_imgur.R"))
+source(paste0(pkg_path,"/R/generate_posts2.R"))
+
+```
+
+## downloadthings
+
+```{r}
+message("###########################################################")
+message("...start scraping")
+#source(paste0(pkg_path,"/R/api_getuploads.R")
+
+mid.df <- data.frame(mids = c(5382023,
+                              207626,
+                              2301165,
+                              26666749,
+                              97990),
+                     author = c("九條",
+                                "莱姆籽",
+                                "天翼羽魂",
+                                "来一发就走字幕组",
+                                "小山君"),
+                     zmz = c("伦敦之心字幕组",
+                             "伦敦之心字幕组",
+                             "伦敦之心字幕组",
+                             "来一发就走字幕组",
+                             "大喜利王字幕组"
+                             ),
+                     kw = c("",
+                            "伦敦之心字幕组",
+                            "伦敦之心字幕组",
+                            "",
+                            "字幕"),
+                     stringsAsFactors = FALSE)
+
+vlist.all <- data.frame()
+
+for ( i in c(1,4,5)){
+  vlist <- api_getuploads_fp(mid.df$mids[i],kw=mid.df$kw[i])
+  vlist$zmz=mid.df$zmz[i]
+  vlist.all <- rbind(vlist.all,vlist)
+}
+class(vlist.all$created) <-"POSIXct"
+
+
+## get new vlist
+p= list.files(post_path)
+oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+
+vlist.new <- vlist.all %>% 
+  filter(!aid %in% oldaid)
+
+message("###########################################################")
+
+message(paste0("...scraping finished, ",nrow(vlist.new)," new posts"))
+if (nrow(vlist.new)==0) {
+  message("...no new post detected, quitting script")
+  q('no')
+}
+
+```
+
+## add info
+
+```{r}
+## vlist add more columns using api
+message("###########################################################")
+message("...starting downloading pics")
+
+vlist.new.anno <- vlist.new %>%
+  mutate(bangumi = getbangumi(title)) %>%
+  mutate(title_bk=title,title=gsub("【.*?】","",title_bk)) %>%
+  mutate(airdate = getyearsdf(title)) %>%
+  mutate(slug = paste0(
+    format(created, "%Y-%m-%d"),
+    "_",
+    format(airdate, "%y%m%d"),
+    "_",
+    aid
+  )) %>%
+  mutate(desc=description) %>%
+  mutate(description=paste0(bangumi,"&#8226;",format(airdate,"%y%m%d"))) %>%
+#  mutate(categories=I(list()))
+  mutate(date=format(created, "%Y-%m-%d")) %>%
+  mutate(publishdate=ifelse(is.na(airdate),lubridate::parse_date_time("19000101",orders="Y-m-d"),format(airdate,"%Y-%m-%d"))) %>%
+  mutate(weight=200000-as.numeric(format(airdate,"%y%m%d")))
+
+
+## unable to vectorize, use for
+vlist.new.anno$cid=NA
+vlist.new.anno$imgur=NA
+vlist.new.anno$tags=NA
+
+
+
+for (i in 1:nrow(vlist.new.anno)) {
+  vlist.new.anno$cid[i] <- api_aid2cid(vlist.new.anno$aid[i])
+  vlist.new.anno$tags[i] <-
+    I(api_getbilitags(vlist.new.anno$aid[i]))
+  vlist.new.anno$categories[i] <-
+    I(list(c(vlist.new.anno$zmz[i], vlist.new.anno$author[i])))
+  vlist.new.anno$bangumis[i] <- I(list(vlist.new.anno$bangumi[i]))
+  Sys.sleep(1)
+    vlist.new.anno$imgur[i] <- api_upload_imgur(vlist.new.anno$pic[i])
+
+
+  
+  #  vlist.new.anno$imgur[i] <-
+}
+
+vlist.new.anno <- vlist.new.anno %>%
+  mutate(text=paste0(
+      "![](",
+      imgur,
+      ")\n",
+      "# 简介  \n",
+      desc,
+      "\n  [BILIBILI](https://www.bilibili.com/video/av",
+      aid,
+      "/)\n",
+      '\n  <iframe src="//www.bilibili.com/html/html5player.html?cid=',
+      cid,
+      '&aid=',
+      aid,
+      '" width="100%" height="500" frameborder="0" allowfullscreen="allowfullscreen"></iframe>'
+    ))
+
+
+```
+
+## output
+
+```{r}
+message("###########################################################")
+message("...starting generating pics")
+message("###########################################################")
+
+generate_post2(vlist.new.anno,post_path)
+```
+
+
+
+## tests
+
+
+```{r eval=FALSE}
+    df <-vlist.new.anno[1,]
+    df.min <- vlist.new.anno[1,] %>%
+#    mutate(desc=description) %>%
+ #   mutate(bangumis=I(list("asdfasdfasdf"))) %>%
+    select(title,author,zmz,publishdate,bangumi,date,slug,description,weight,categories,tags,bangumis)
+
+
+header <-
+  as.list(
+    df.min %>% select(
+      title,
+      author,
+      zmz,
+      publishdate,
+      bangumi,
+      date,
+      slug,
+      description,
+      weight
+    ) 
+    )
+
+header$bangumis=df.min$bangumis %>% unlist() %>% as.list()
+#names(bangumis) <-"bangumis"
+
+header$tags =df.min$tags %>% unlist()%>% as.list()
+#names(tags) <-"tags"
+
+header$categories=df.min$categories %>% unlist()%>% as.list()
+#names(categories) <- "categories"
+
+#    header <- c(header,c(tags=I(list(tags)),bangumis=I(list(bangumis)),categories=I(list(categories))))
+text <- df$text
+
+z = c(jsonlite::toJSON(header, auto_unbox = TRUE, pretty = TRUE), text)
+z2 = c("---",
+       yaml::as.yaml(
+         header,
+         indent = 2,
+         indent.mapping.sequence = TRUE
+       ),
+       "---",
+       text)
+fileConn <- file("/tmp/test.md")
+writeLines(z2, fileConn)
+close(fileConn)
+
+```
+
+
+
+
+
+
+
