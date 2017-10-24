@@ -47,6 +47,7 @@ generate_post2 <- function(df, foldpath) {
         )
       )
 
+    header$author = df.min$author %>% unlist() %>% as.list()
     header$bangumis = df.min$bangumis %>% unlist() %>% as.list()
     header$tags = df.min$tags %>% unlist() %>% as.list()
     header$categories = df.min$categories %>% unlist() %>% as.list()

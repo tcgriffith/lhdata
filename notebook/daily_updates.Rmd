@@ -74,7 +74,7 @@ message("###########################################################")
 message(paste0("...scraping finished, ",nrow(vlist.new)," new posts"))
 if (nrow(vlist.new)==0) {
   message("...no new post detected, quitting script")
-  q('no')
+#  q('no')
 }
 
 ```
@@ -119,6 +119,7 @@ for (i in 1:nrow(vlist.new.anno)) {
   vlist.new.anno$categories[i] <-
     I(list(c(vlist.new.anno$zmz[i], vlist.new.anno$author[i])))
   vlist.new.anno$bangumis[i] <- I(list(vlist.new.anno$bangumi[i]))
+  vlist.new.anno$author[i] =I(list(unique(c(vlist.new.anno$zmz[i],vlist.new.anno$author[i]))))
   Sys.sleep(1)
     vlist.new.anno$imgur[i] <- api_upload_imgur(vlist.new.anno$pic[i])
 

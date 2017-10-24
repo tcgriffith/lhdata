@@ -55,7 +55,7 @@ api_getuploads_fp <- function(mid, kw = "") {
   fpurl = paste0(
     "https://space.bilibili.com/ajax/member/getSubmitVideos?mid=",
     mid,
-    "&pagesize=10&tid=0&page=1&keyword=",
+    "&pagesize=5&tid=0&page=1&keyword=",
     kw,
     "&order=pubdate"
   )
