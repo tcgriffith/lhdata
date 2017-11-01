@@ -1,0 +1,40 @@
+---
+title: "Untitled"
+author: "tc"
+date: "2017年11月1日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+post_path="c:/Users/TC/GIT/owaraisite/content"
+```
+
+## R Markdown
+
+```{r}
+f <- list.files(post_path,full.names = TRUE,recursive = TRUE,pattern = "*.md")
+
+f.list <- lapply(f,readLines,encoding="UTF-8")
+
+
+
+
+```
+
+```{r}
+myfunc <- function(x){
+  sum(grep("pan.baidu",x))
+}
+
+
+tmp <- lapply(f.list,myfunc)
+
+f.hit <- f.list[which(tmp>0)]
+```
+
+```{r}
+lapply(f)
+```
+

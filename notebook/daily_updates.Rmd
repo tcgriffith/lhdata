@@ -12,14 +12,27 @@ library(dplyr)
 pkg_path="~/GIT/lhdata"
 post_path="~/GIT/owaraisite/content/post/"
 
-source(paste0(pkg_path,"/R/api_getuploads.R"))
-source(paste0(pkg_path,"/R/getbangumi.R"))
-source(paste0(pkg_path,"/R/getyearsdf.R"))
-source(paste0(pkg_path,"/R/api_aid2cid.R"))
-source(paste0(pkg_path,"/R/api_getbilitags.R"))
-source(paste0(pkg_path,"/R/api_upload_imgur.R"))
-source(paste0(pkg_path,"/R/generate_posts2.R"))
+if (Sys.info()["sysname"]=="Windows"){
+  pkg_path="c:/Users/TC/GIT/lhdata"
+  post_path="c:/Users/TC/GIT/owaraisite/content/post/"
+}
 
+source(encoding="UTF-8",paste0(pkg_path,"/R/api_getuploads.R"))
+source(encoding="UTF-8",paste0(pkg_path,"/R/getbangumi.R"))
+source(encoding="UTF-8",paste0(pkg_path,"/R/getyearsdf.R"))
+source(encoding="UTF-8",paste0(pkg_path,"/R/api_aid2cid.R"))
+source(encoding="UTF-8",paste0(pkg_path,"/R/api_getbilitags.R"))
+source(encoding="UTF-8",paste0(pkg_path,"/R/api_upload_imgur.R"))
+source(encoding="UTF-8",paste0(pkg_path,"/R/generate_posts2.R"))
+
+```
+
+
+```{r}
+#tmp <- api_getuploads(2301165,"有吉之壁")
+
+class(tmp$created) <-"POSIXct"
+vlist.new <-tmp
 ```
 
 ## downloadthings
@@ -27,7 +40,7 @@ source(paste0(pkg_path,"/R/generate_posts2.R"))
 ```{r}
 message("###########################################################")
 message("...start scraping")
-#source(paste0(pkg_path,"/R/api_getuploads.R")
+#source(encoding="UTF-8",paste0(pkg_path,"/R/api_getuploads.R")
 
 mid.df <- data.frame(mids = c(5382023,
                               207626,
@@ -47,7 +60,7 @@ mid.df <- data.frame(mids = c(5382023,
                              ),
                      kw = c("",
                             "伦敦之心字幕组",
-                            "伦敦之心字幕组",
+                            "",
                             "",
                             "字幕"),
                      stringsAsFactors = FALSE)

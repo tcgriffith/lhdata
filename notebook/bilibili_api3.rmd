@@ -1,0 +1,32 @@
+---
+title: "bilibili_api3"
+author: "tc"
+date: "2017Äê10ÔÂ25ÈÕ"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+url="https://api.bilibili.com/x/player/pagelist?aid=1873150&jsonp=jsonp"
+
+tmp <- jsonlite::fromJSON(url)
+```
+
+```{r results='asis'}
+library(dplyr)
+
+tmptbl <-
+tmp$data %>%
+  select(page,part) %>%
+  mutate(part=paste0("[",part,"](https://www.bilibili.com/video/av1873150/#page=",page,")"))
+
+knitr::kable(tmptbl,format="markdown")
+
+```
+
+
