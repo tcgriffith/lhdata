@@ -39,6 +39,7 @@ vlist.new <-tmp
 
 ```{r}
 message("###########################################################")
+message(Sys.time())
 message("...start scraping")
 #source(encoding="UTF-8",paste0(pkg_path,"/R/api_getuploads.R")
 
@@ -87,7 +88,7 @@ message("###########################################################")
 message(paste0("...scraping finished, ",nrow(vlist.new)," new posts"))
 if (nrow(vlist.new)==0) {
   message("...no new post detected, quitting script")
-#  q('no')
+  q('no')
 }
 
 ```
