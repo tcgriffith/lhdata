@@ -8,7 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
-
+library(lubridate)
 pkg_path="~/GIT/lhdata"
 post_path="~/GIT/owaraisite/content/post/"
 
@@ -17,31 +17,21 @@ if (Sys.info()["sysname"]=="Windows"){
   post_path="c:/Users/TC/GIT/owaraisite/content/post/"
 }
 
-source(encoding="UTF-8",paste0(pkg_path,"/R/api_getuploads.R"))
-source(encoding="UTF-8",paste0(pkg_path,"/R/getbangumi.R"))
-source(encoding="UTF-8",paste0(pkg_path,"/R/getyearsdf.R"))
-source(encoding="UTF-8",paste0(pkg_path,"/R/api_aid2cid.R"))
-source(encoding="UTF-8",paste0(pkg_path,"/R/api_getbilitags.R"))
-source(encoding="UTF-8",paste0(pkg_path,"/R/api_upload_imgur.R"))
-source(encoding="UTF-8",paste0(pkg_path,"/R/generate_posts2.R"))
-
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getuploads.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getuploads_fp.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/getbangumi.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/getyearsdf.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_aid2cid.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getbilitags.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_upload_imgur.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/generate_posts2.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/annotate_vlist.R"))
+load(paste0(pkg_path,"/data/mid.rda"))
 ```
 
+```{r eval=FALSE}
 
-```{r}
-#tmp <- api_getuploads(2301165,"有吉之壁")
 
-class(tmp$created) <-"POSIXct"
-vlist.new <-tmp
-```
-
-## downloadthings
-
-```{r}
-message("###########################################################")
-message(Sys.time())
-message("...start scraping")
-#source(encoding="UTF-8",paste0(pkg_path,"/R/api_getuploads.R")
 
 mid.df <- data.frame(mids = c(5382023,
                               207626,
@@ -61,10 +51,25 @@ mid.df <- data.frame(mids = c(5382023,
                              ),
                      kw = c("",
                             "伦敦之心字幕组",
+                            "人力",
                             "",
-                            "",
-                            "字幕"),
+                            ""),
                      stringsAsFactors = FALSE)
+save(mid.df,file=paste0(pkg_path,"/data/mid.rda"))
+
+```
+
+
+
+
+## downloadthings
+
+```{r}
+message("###########################################################")
+message(Sys.time())
+message("...start scraping\n")
+#source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getuploads.R")
+
 
 vlist.all <- data.frame()
 
@@ -73,7 +78,7 @@ for ( i in c(1,4,5)){
   vlist$zmz=mid.df$zmz[i]
   vlist.all <- rbind(vlist.all,vlist)
 }
-class(vlist.all$created) <-"POSIXct"
+
 
 
 ## get new vlist
@@ -82,6 +87,7 @@ oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
 
 vlist.new <- vlist.all %>% 
   filter(!aid %in% oldaid)
+
 
 message("###########################################################")
 
@@ -93,72 +99,24 @@ if (nrow(vlist.new)==0) {
 
 ```
 
+```{r test, eval=FALSE}
+vlist.new <-api_getuploads(5858153,kw = "翻唱")
+
+vlist.new$zmz="伦敦之心字幕组"
+
+#vlist.new.anno$zmz="伦敦之心字幕组"
+```
+
+
 ## add info
 
 ```{r}
 ## vlist add more columns using api
+## require vlist.new
 message("###########################################################")
-message("...starting downloading pics")
-
-vlist.new.anno <- vlist.new %>%
-  mutate(bangumi = getbangumi(title)) %>%
-  mutate(title_bk=title,title=gsub("【.*?】","",title_bk)) %>%
-  mutate(airdate = getyearsdf(title)) %>%
-  mutate(slug = paste0(
-    format(created, "%Y-%m-%d"),
-    "_",
-    format(airdate, "%y%m%d"),
-    "_",
-    aid
-  )) %>%
-  mutate(desc=description) %>%
-  mutate(description=paste0(bangumi,"&#8226;",format(airdate,"%y%m%d"))) %>%
-#  mutate(categories=I(list()))
-  mutate(date=format(created, "%Y-%m-%d")) %>%
-  mutate(publishdate=ifelse(is.na(airdate),lubridate::parse_date_time("19000101",orders="Y-m-d"),format(airdate,"%Y-%m-%d"))) %>%
-  mutate(weight=200000-as.numeric(format(airdate,"%y%m%d")))
-
-
-## unable to vectorize, use for
-vlist.new.anno$cid=NA
-vlist.new.anno$imgur=NA
-vlist.new.anno$tags=NA
-
-
-
-for (i in 1:nrow(vlist.new.anno)) {
-  vlist.new.anno$cid[i] <- api_aid2cid(vlist.new.anno$aid[i])
-  vlist.new.anno$tags[i] <-
-    I(api_getbilitags(vlist.new.anno$aid[i]))
-  vlist.new.anno$categories[i] <-
-    I(list(c(vlist.new.anno$zmz[i], vlist.new.anno$author[i])))
-  vlist.new.anno$bangumis[i] <- I(list(vlist.new.anno$bangumi[i]))
-  vlist.new.anno$author[i] =I(list(unique(c(vlist.new.anno$zmz[i],vlist.new.anno$author[i]))))
-  Sys.sleep(1)
-    vlist.new.anno$imgur[i] <- api_upload_imgur(vlist.new.anno$pic[i])
-
-
-  
-  #  vlist.new.anno$imgur[i] <-
-}
-
-vlist.new.anno <- vlist.new.anno %>%
-  mutate(text=paste0(
-      "![](",
-      imgur,
-      ")\n",
-      "# 简介  \n",
-      desc,
-      "\n  [BILIBILI](https://www.bilibili.com/video/av",
-      aid,
-      "/)\n",
-      '\n  <iframe src="//www.bilibili.com/html/html5player.html?cid=',
-      cid,
-      '&aid=',
-      aid,
-      '" width="100%" height="500" frameborder="0" allowfullscreen="allowfullscreen"></iframe>'
-    ))
-
+message("...starting downloading pics\n")
+#source("../R/annotate_vlist.R")
+vlist.new.anno <-annotate_vlist(vlist.new)
 
 ```
 
@@ -227,8 +185,47 @@ close(fileConn)
 
 ```
 
+## get humi and david
+
+```{r eval=F}
+# scrap humi and david 20171101
+
+ tmp <- api_getuploads(2301165,"有吉之壁")
+ 
+ tmp2 <- api_getuploads(5858153,"痛快TV")
+ 
+ tmp3 <-  api_getuploads(5858153,"短剧")
+
+vlist.new <-rbind(tmp,tmp2,tmp3)
+class(vlist.new$created) <-"POSIXct"
+
+```
+
+```{r eval=FALSE}
+vlist.new.anno$zmz="伦敦之心字幕组"
+vlist.new.anno$author=vlist.new$author
+vlist.new.anno$up=vlist.new.anno$author
+vlist.new.anno$bangumi=tolower(vlist.new.anno$bangumi)
+
+for (i in 1:nrow(vlist.new.anno)) {
+# vlist.new.anno$cid[i] <- api_aid2cid(vlist.new.anno$aid[i])
+ vlist.new.anno$tags[i] <-
+   I(api_getbilitags(vlist.new.anno$aid[i]))
+ vlist.new.anno$categories[i] <-
+   I(list(c(vlist.new.anno$zmz[i], vlist.new.anno$up[i])))
+ vlist.new.anno$bangumis[i] <- I(list(vlist.new.anno$bangumi[i]))
+ vlist.new.anno$author[i] =I(list(unique(c(vlist.new.anno$zmz[i],vlist.new.anno$up[i]))))
+#  vlist.new.anno$imgur[i] <- api_upload_imgur(vlist.new.anno$pic[i])
 
 
+
+  #  vlist.new.anno$imgur[i] <-
+}
+```
+
+```{r eval=FALSE}
+#save(vlist.new.anno,file="../data/vlist.new.anno_humidavid.rda")
+```
 
 
 

@@ -1,21 +1,13 @@
-generate_post2 <- function(df, foldpath) {
+generate_post2 <- function(dfa, foldpath) {
   library(dplyr)
 
-  filepath = paste0(
-    foldpath,
-    "/",
-    format(df$created[i], "%Y-%m-%d"),
-    "-",
-    format(df$airdate[i], "%y%m%d"),
-    "-",
-    df$aid[i],
-    ".md"
-  )
 
 
-  for (i in 1:nrow(df)) {
-    df <- vlist.new.anno[i, ]
-    df.min <- vlist.new.anno[i, ] %>%
+
+  for (i in 1:nrow(dfa)) {
+
+    df <- dfa[i, ]
+    df.min <- dfa[i, ] %>%
       select(
         title,
         author,
@@ -30,6 +22,17 @@ generate_post2 <- function(df, foldpath) {
         tags,
         bangumis
       )
+
+    filepath = paste0(
+      foldpath,
+      "/",
+      format(dfa$created[i], "%Y-%m-%d"),
+      "-",
+      format(dfa$airdate[i], "%y%m%d"),
+      "-",
+      dfa$aid[i],
+      ".md"
+    )
 
 
     header <-

@@ -39,6 +39,7 @@ getbangumi <- function(vector){
     mutate(bangumi = ifelse(grepl("娱乐之神",vector),"娱乐之神",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("内村照",vector),"内村照",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("海王星.*rola",vector),"海王星rola的爆笑归纳",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("痛快TV",vector),"痛快TV",bangumi)) %>%
     mutate(bangumi = ifelse(is.na(bangumi),"其他",bangumi))  %>%
 
 
