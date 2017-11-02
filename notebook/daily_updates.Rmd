@@ -197,15 +197,12 @@ close(fileConn)
  tmp3 <-  api_getuploads(5858153,"短剧")
 
 vlist.new <-rbind(tmp,tmp2,tmp3)
-class(vlist.new$created) <-"POSIXct"
+vlist.new$zmz="伦敦之心字幕组"
 
 ```
 
 ```{r eval=FALSE}
-vlist.new.anno$zmz="伦敦之心字幕组"
-vlist.new.anno$author=vlist.new$author
-vlist.new.anno$up=vlist.new.anno$author
-vlist.new.anno$bangumi=tolower(vlist.new.anno$bangumi)
+
 
 for (i in 1:nrow(vlist.new.anno)) {
 # vlist.new.anno$cid[i] <- api_aid2cid(vlist.new.anno$aid[i])
