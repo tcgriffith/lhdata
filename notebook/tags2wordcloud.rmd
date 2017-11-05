@@ -1,0 +1,135 @@
+---
+title: "tags2wordcloud"
+author: "tc"
+date: "2017年11月4日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## draw tags as wordcloud
+
+```{r}
+library(XML)
+library(RCurl)
+library(rlist)
+
+url= "http://owaraiclub.com/bangumis/"
+theurl <- getURL(url)
+#tables <- readHTMLTable(theurl)
+
+mylist <- XML::readHTMLList(theurl)
+
+taglist <- mylist[[2]]
+
+library(stringr)
+library(dplyr)
+
+tmptag <-stringr::str_split(taglist,pattern="\r\n    \r\n    |\n    \n    ")
+
+tmptag.df <- as.data.frame(do.call(rbind,tmptag))
+
+tmptag.df.final <-
+  tmptag.df %>%
+  mutate(word=V1,freq=as.numeric(stringr::str_extract(V2,"\\d{1,}"))) %>%
+  select(word,freq)
+  
+
+```
+
+```{r}
+taglist <-rlist::List(tmptag.df.final)
+
+rlist::list.save(taglist,file="test.yaml")
+```
+
+
+```{r}
+library(wordcloud2)
+
+wordcloud2(tmptag.df.final, size = 1,shape = 'star')
+```
+
+```{r}
+install.packages("webshot")
+webshot::install_phantomjs()
+```
+
+
+```{r}
+wordcloud3 <- function (data, size = 1, minSize = 0, gridSize = 0, fontFamily = "Segoe UI", 
+  fontWeight = "bold", color = "random-dark", backgroundColor = "white", 
+  minRotation = -pi/4, maxRotation = pi/4, shuffle = TRUE, 
+  rotateRatio = 0.4, shape = "circle", ellipticity = 0.65, 
+  widgetsize = NULL, figPath = NULL, hoverFunction = NULL) 
+{
+  if (class(data) == "table") {
+    dataOut = data.frame(name = names(data), freq = as.vector(data))
+  }
+  else {
+    data = as.data.frame(data)
+    dataOut = data[, 1:2]
+    names(dataOut) = c("name", "freq")
+  }
+  if (!is.null(figPath)) {
+    if (!file.exists(figPath)) {
+      stop("cannot find fig in the figPath")
+    }
+    spPath = strsplit(figPath, "\\.")[[1]]
+    len = length(spPath)
+    figClass = spPath[len]
+    if (!figClass %in% c("jpeg", "jpg", "png", "bmp", "gif")) {
+      stop("file should be a jpeg, jpg, png, bmp or gif file!")
+    }
+    base64 = base64enc::base64encode(figPath)
+    base64 = paste0("data:image/", figClass, ";base64,", 
+      base64)
+  }
+  else {
+    base64 = NULL
+  }
+  weightFactor = size * 180/max(dataOut$freq)
+  settings <- list(word = dataOut$name, freq = dataOut$freq, 
+    fontFamily = fontFamily, fontWeight = fontWeight, color = color, 
+    minSize = minSize, weightFactor = weightFactor, backgroundColor = backgroundColor, 
+    gridSize = gridSize, minRotation = minRotation, maxRotation = maxRotation, 
+    shuffle = shuffle, rotateRatio = rotateRatio, shape = shape, 
+    ellipticity = ellipticity, figBase64 = base64, hover = htmlwidgets::JS(hoverFunction))
+  chart = htmlwidgets::createWidget("wordcloud2", settings, 
+    width = widgetsize[1], height = widgetsize[2], sizingPolicy = htmlwidgets::sizingPolicy(viewer.padding = 0, 
+      browser.padding = 0, browser.fill = TRUE))
+  chart
+}
+```
+
+```{r}
+library(wordcloud2)
+```
+
+```{r}
+library(dplyr)
+tmp <- wordcloud2::demoFreq %>% 
+  arrange(desc(freq))
+```
+
+
+```{r}
+wordcloud3(wordcloud2::demoFreq,size=0.5,shape="star")
+
+#wordcloud2::letterCloud(tmp,"R",wordSize = 3,size=0.1)
+```
+
+
+
+```{r}
+library(webshot)
+library(htmlwidgets)
+library(wordcloud2)
+# test figPath
+figPath = system.file("examples/t.png",package = "wordcloud2")
+hw=wordcloud2(demoFreq, figPath = figPath,size=0.1)
+print(hw)
+```
+

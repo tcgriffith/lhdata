@@ -1,0 +1,61 @@
+---
+title: "Untitled"
+author: "tc"
+date: "2017年11月5日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r}
+f <- list.files("c:/Users/TC/GIT/owaraisite/content/post/",full.names = TRUE)
+
+#f.list <- lapply(f,readLines,encoding="UTF-8")
+```
+
+```{r}
+adjustvideo <- function(posttext){
+  vline <- grep("<iframe",posttext)
+  vline.upd <- gsub("<iframe","<iframe class='video'",posttext[vline])
+  post.new <- posttext  
+  post.new[vline] <- paste0("<div class=\"vcontainer\">",vline.upd,"</div>")
+  
+  return(post.new)
+}
+
+
+
+
+```
+
+```{r}
+
+```
+
+
+```{r}
+
+adjustvideo_list <- function(filepath) {
+  file.text <- readLines(filepath,encoding="UTF-8")
+  
+  z2 <- adjustvideo(file.text)
+#  message(grep("iframe",z2,value = TRUE))
+  fileConn <- file(filepath)
+  writeLines(z2, fileConn,useBytes = TRUE)
+  close(fileConn)
+  message(paste0(basename(filepath), " finished"))
+}
+
+
+```
+
+```{r}
+
+lapply(f,adjustvideo_list)
+```
+
