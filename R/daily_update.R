@@ -6,3 +6,4 @@ runAllChunks <- function(rmd, envir=globalenv()){
 }
 
 runAllChunks("~/GIT/lhdata/notebook/daily_updates.Rmd")
+runAllChunks("~/GIT/lhdata/notebook/update_tags.Rmd")

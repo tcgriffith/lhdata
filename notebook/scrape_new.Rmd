@@ -1,0 +1,242 @@
+---
+title: "scrape_new"
+author: "TC"
+date: "November 6, 2017"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(lubridate)
+pkg_path="~/GIT/lhdata"
+post_path="~/GIT/owaraisite/content/post/"
+
+if (Sys.info()["sysname"]=="Windows"){
+  pkg_path="c:/Users/TC/GIT/lhdata"
+  post_path="c:/Users/TC/GIT/owaraisite/content/post/"
+}
+
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getuploads.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getuploads_fp.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/getbangumi.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/getyearsdf.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_aid2cid.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getbilitags.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_upload_imgur.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/generate_posts2.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/annotate_vlist.R"))
+load(paste0(pkg_path,"/data/mid.rda"))
+```
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## tests
+
+
+```{r eval=FALSE}
+    df <-vlist.new.anno[1,]
+    df.min <- vlist.new.anno[1,] %>%
+#    mutate(desc=description) %>%
+ #   mutate(bangumis=I(list("asdfasdfasdf"))) %>%
+    select(title,author,zmz,publishdate,bangumi,date,slug,description,weight,categories,tags,bangumis)
+
+
+header <-
+  as.list(
+    df.min %>% select(
+      title,
+      author,
+      zmz,
+      publishdate,
+      bangumi,
+      date,
+      slug,
+      description,
+      weight
+    ) 
+    )
+
+header$bangumis=df.min$bangumis %>% unlist() %>% as.list()
+#names(bangumis) <-"bangumis"
+
+header$tags =df.min$tags %>% unlist()%>% as.list()
+#names(tags) <-"tags"
+
+header$categories=df.min$categories %>% unlist()%>% as.list()
+#names(categories) <- "categories"
+
+#    header <- c(header,c(tags=I(list(tags)),bangumis=I(list(bangumis)),categories=I(list(categories))))
+text <- df$text
+
+z = c(jsonlite::toJSON(header, auto_unbox = TRUE, pretty = TRUE), text)
+z2 = c("---",
+       yaml::as.yaml(
+         header,
+         indent = 2,
+         indent.mapping.sequence = TRUE
+       ),
+       "---",
+       text)
+fileConn <- file("/tmp/test.md")
+writeLines(z2, fileConn)
+close(fileConn)
+
+```
+
+## get humi and david
+
+```{r eval=F}
+# scrap humi and david 20171101
+
+ tmp <- api_getuploads(2301165,"有吉之壁")
+ 
+ tmp2 <- api_getuploads(5858153,"痛快TV")
+ 
+ tmp3 <-  api_getuploads(5858153,"短剧")
+
+vlist.new <-rbind(tmp,tmp2,tmp3)
+vlist.new$zmz="伦敦之心字幕组"
+
+```
+
+```{r eval=FALSE}
+
+
+for (i in 1:nrow(vlist.new.anno)) {
+# vlist.new.anno$cid[i] <- api_aid2cid(vlist.new.anno$aid[i])
+ vlist.new.anno$tags[i] <-
+   I(api_getbilitags(vlist.new.anno$aid[i]))
+ vlist.new.anno$categories[i] <-
+   I(list(c(vlist.new.anno$zmz[i], vlist.new.anno$up[i])))
+ vlist.new.anno$bangumis[i] <- I(list(vlist.new.anno$bangumi[i]))
+ vlist.new.anno$author[i] =I(list(unique(c(vlist.new.anno$zmz[i],vlist.new.anno$up[i]))))
+#  vlist.new.anno$imgur[i] <- api_upload_imgur(vlist.new.anno$pic[i])
+
+
+
+  #  vlist.new.anno$imgur[i] <-
+}
+```
+
+```{r eval=FALSE}
+#save(vlist.new.anno,file="../data/vlist.new.anno_humidavid.rda")
+```
+
+## get 4431
+
+```{r eval=FALSE}
+ tmp <- api_getuploads(8665350,"4431")
+
+```
+
+```{r eval=FALSE}
+  vlist.new <-rbind(tmp)
+  vlist.new$zmz="4431字幕组"
+```
+
+```{r chunks,eval=FALSE}
+vlist.chunk1=vlist.new[1:40,]
+
+vlist.chunk2=vlist.new[41:80,]
+
+vlist.chunk3=vlist.new[81:nrow(vlist.new),]
+
+#vlist.new.anno <-annotate_vlist(vlist.new[])
+```
+
+```{r eval=FALSE}
+vlist.new.anno.chunk1 <- annotate_vlist(vlist.chunk1)
+```
+
+```{r eval=FALSE}
+save(vlist.new.anno.chunk1,file="../data/shushu.chunk1.rda")
+```
+
+
+```{r eval=FALSE}
+generate_post2(vlist.new.anno.chunk1,post_path)
+```
+
+```{r eval=FALSE}
+#Sys.sleep(3600)
+#vlist.new.anno.chunk2 <- annotate_vlist(vlist.chunk2)
+#Sys.sleep(3600)
+vlist.new.anno.chunk3 <- annotate_vlist(vlist.chunk3)
+```
+
+```{r eval=FALSE}
+vlist.new.anno <- rbind(vlist.new.anno.chunk1,vlist.new.anno.chunk2,vlist.new.anno.chunk3)
+```
+
+
+
+```{r eval=FALSE}
+#save(vlist.new.anno,file="../data/shushu.rda")
+load("../data/shushu.rda")
+```
+
+
+```{r bangumifix eval=FALSE}
+ source("../R/getbangumi.R")
+
+vlist.new.anno <-
+  vlist.new.anno%>%
+  mutate(bangumi = tolower(getbangumi(title_bk)))
+
+for (i in 1:nrow(vlist.new.anno)){
+  vlist.new.anno$bangumis[i] <- I(list(vlist.new.anno$bangumi[i]))
+}
+
+
+```
+
+### filter by shushu
+
+```{r eval=FALSE}
+vlist.other <- vlist.new.anno %>%
+  select(bangumi,aid,title) %>%
+  filter(bangumi=="其他") %>%
+  select(aid, title)
+```
+
+```{r eval=FALSE}
+#write.table(vlist.other,file="../data/shushu_other.txt",sep="\t",quote=FALSE,row.names = FALSE)
+```
+
+```{r}
+manual_filter <- data.table::fread("../data/shushu_other(1).txt")
+```
+
+```{r eval=FALSE}
+manual_filter <- data.table::fread("../data/shushu_other(1).txt")
+vlist.new.anno.final <-
+  vlist.new.anno %>%
+  filter(bangumi!="其他"|aid %in% manual_filter$aid)
+
+save(manual_filter,file="../data/manual_filter.rda")
+```
+
+
+```{r eval= FALSE}
+manual_filter <- 
+vlist.new.anno %>%
+  select(aid) %>%
+  filter(!aid %in% vlist.new.anno.final$aid)
+save(manual_filter,file="../data/manual_filter.rda")
+```
+
+
+```{r eval=FALSE}
+#save(vlist.new.anno.final,file="../data/shushu_final.rda")
+#load("../data/shushu_final.rda")
+generate_post2(vlist.new.anno.final,post_path)
+```
+

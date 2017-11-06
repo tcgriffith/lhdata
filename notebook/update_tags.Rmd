@@ -1,0 +1,88 @@
+---
+title: "Untitled"
+author: "TC"
+date: "November 3, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+post_path="~/GIT/owaraisite/content/post/"
+pkg_path="~/GIT/lhdata"
+```
+
+
+```{r}
+
+BADTAG_REGEX="广告|广播|日本|熟肉|月耀|londonhearts|amp|集锦|吃饭看|春晚|九条|进度条|纪录片|江头|正版|upup|大集合|搞笑|伦敦之心|nonestyle|-ute|字幕组|-.+[[:space:]].+|综艺|[0-9]{4}|开口跪|[\u3040-\u309f]|[\u30a0-\u30ff]"
+
+tag_cat <- function(fp) {
+
+#  
+#  print(length(fp))
+  bangpos=grep("^bangumis:", fp)
+  catpos=grep("^categories:", fp)
+  tagpos=grep("^tags:", fp)
+  
+  if(catpos < tagpos) catpos=bangpos
+  
+  fp[tagpos:catpos] <- tolower(fp[tagpos:catpos])
+#  mytags <- fp[tagpos:catpos]
+  badtags <- grep(BADTAG_REGEX,fp)
+  badtags2 <- badtags[which(badtags >tagpos & badtags <catpos)]
+  
+  if (length(badtags2) >0)
+   message(paste(fp[badtags2],collapse ="\n"))
+  
+#  message(length(removelogs))
+ # print(length(fp[-badtags2]))
+  if (length(badtags2) > 0){
+    removelogs <<- c(removelogs,fp[badtags2])
+    return(fp[-badtags2])
+  }
+  else{
+    return(fp)
+  }
+  
+}
+#tag_cat(fp.list[[1]])
+#mytag_cat <- lapply(fp.list,tag_cat)
+tag_cat_update <- function(filepath) {
+  fp <- readLines(filepath)
+#  message(paste0(filepath, " in process"))
+  updated <- tag_cat(fp)
+  if (length(fp) > length(updated)){  
+    fileConn <- file(filepath)
+    writeLines(updated, fileConn)
+    close(fileConn)
+  }
+#  return(updated)
+}
+#tag_cat_update(myfilepath)
+```
+
+```{r}
+#as.list(listf)
+#do.call(tag_cat_update,as.list(listf))
+message("###########################################################")
+message(Sys.time())
+message("...start cleaning up tags\n")
+
+listf=list.files(post_path,full.names = TRUE)
+
+load(paste0(pkg_path,"/data/removetags.rda"))
+message("posts: ",length(listf))
+tag_bg <- length(removelogs)
+for (mypath in listf){
+  tag_cat_update(mypath)
+}
+tag_ed <- length(removelogs)
+message("removelogs: ",tag_ed - tag_bg)
+```
+
+```{r}
+
+save(removelogs,file=paste0(pkg_path,"/data/removetags.rda"))
+```
+
+

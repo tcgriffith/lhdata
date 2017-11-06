@@ -1,0 +1,64 @@
+---
+title: "Untitled"
+author: "TC"
+date: "November 3, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+library(wordcloud2)
+tmp <- wordcloud2::demoFreq
+#wordcloud2(demoFreq)
+```
+
+
+```{r}
+library(XML)
+library(RCurl)
+library(rlist)
+library(dplyr)
+theurl <- getURL("http://owaraiclub.com/tags/",.opts = list(ssl.verifypeer = FALSE) )
+#tables <- readHTMLTable(theurl)
+
+list <- XML::readHTMLList(theurl)
+#tables <- list.clean(tables, fun = is.null, recursive = FALSE)
+#n.rows <- unlist(lapply(tables, function(t) dim(t)[1]))
+list[[2]] -> tmplist
+
+name <- stringr::str_split(tmplist,pattern = "\n    \n    ")
+
+name.df <- do.call(rbind,name)
+
+name.df <- as_tibble(name.df)
+```
+
+```{r}
+library(dplyr)
+wc.df <- 
+  name.df %>%
+  mutate(word=V1) %>%
+  mutate(freq=as.numeric(gsub("^.*?([0-9]{1,}).*?$","\\1",V2))) %>%
+  select(word,freq)
+```
+
+```{r}
+tmp <-wordcloud2::demoFreq
+```
+
+```{r}
+m <- wordcloud2(wc.df)
+library(htmlwidgets)
+#install.packages("webshot")
+#webshot::install_phantomjs()
+#library(wordcloud2)
+#hw = wordcloud2(demoFreq,size = 3)
+saveWidget(m,"/tmp/1.html",selfcontained = F)
+webshot::webshot("/tmp/1.html","1.png",vwidth = 1992, vheight = 1744, delay =10)
+```
+
