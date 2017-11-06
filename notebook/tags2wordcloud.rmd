@@ -17,7 +17,7 @@ library(RCurl)
 library(rlist)
 
 url= "http://owaraiclub.com/bangumis/"
-theurl <- getURL(url)
+theurl <- RCurl::getURL(url)
 #tables <- readHTMLTable(theurl)
 
 mylist <- XML::readHTMLList(theurl)
