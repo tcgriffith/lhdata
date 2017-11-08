@@ -2,9 +2,9 @@
 .Rhistory
 .RData
 .Ruserdata
-.jpg
+*.jpg
 .html
-data/
+*.png
 notebook/exp/
 notebook/exp2/
 notebook/godtongue/

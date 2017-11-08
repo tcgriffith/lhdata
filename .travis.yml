@@ -1,0 +1,18 @@
+language: r
+sudo: false
+latex: false
+pandoc: false
+cache: packages
+
+before_install:
+  - git config --global user.email "ztc.ustcer@gmail.com"
+  - git config --global user.name "tcgriffith"
+
+script:
+  - Rscript R/fetch.R
+
+after_success:
+  - rm twitter_token.rds
+  - git add --all *
+  - git commit -m"Daily update"
+  - git push -q https://${GITHUB_PAT}@github.com/${TRAVIS_REPO_SLUG}.git HEAD:master
