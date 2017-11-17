@@ -94,13 +94,17 @@ oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
 vlist.new <- vlist.all %>% 
   filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
 
+filter_update <- unique(rbind(manual_filter,data.frame(aid=oldaid)))
+
+manual_filter <- filter_update
+save(manual_filter,file=paste0(pkg_path,"/data/manual_filter.rda"))
 
 message("###########################################################")
 
 message(paste0("...scraping finished, ",nrow(vlist.new)," new posts"))
 if (nrow(vlist.new)==0) {
   message("...no new post detected, quitting script")
-  q('no')
+#  q('no')
 }
 
 ```
