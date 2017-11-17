@@ -104,7 +104,7 @@ message("###########################################################")
 message(paste0("...scraping finished, ",nrow(vlist.new)," new posts"))
 if (nrow(vlist.new)==0) {
   message("...no new post detected, quitting script")
-#  q('no')
+  q('no')
 }
 
 ```
