@@ -81,11 +81,9 @@ annotate_vlist <- function(vlist.new) {
         "\n  [BILIBILI](https://www.bilibili.com/video/av",
         aid,
         "/)\n",
-        '\n  <iframe src="//www.bilibili.com/html/html5player.html?cid=',
-        cid,
-        '&aid=',
+        '\n<div class="vcontainer">  <iframe class="video" src="//www.bilibili.com/blackboard/player.html?aid=',
         aid,
-        '" width="100%" height="500" frameborder="0" allowfullscreen="allowfullscreen"></iframe>'
+        '" width="100%" height="500" frameborder="0" allowfullscreen="allowfullscreen"></iframe></div>'
       )
     )
   return(vlist.new.anno)
