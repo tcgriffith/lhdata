@@ -1,7 +1,7 @@
 ---
 title: "bilibili_api3"
 author: "tc"
-date: "2017Äê10ÔÂ25ÈÕ"
+date: "2017/10/25/"
 output: html_document
 ---
 
@@ -20,13 +20,46 @@ tmp <- jsonlite::fromJSON(url)
 ```{r results='asis'}
 library(dplyr)
 
-tmptbl <-
-tmp$data %>%
-  select(page,part) %>%
-  mutate(part=paste0("[",part,"](https://www.bilibili.com/video/av1873150/#page=",page,")"))
+getlist <- function(aid=1873150) {
+  url = paste0("https://api.bilibili.com/x/player/pagelist?aid=",aid,"&jsonp=jsonp")
+  tmp <- jsonlite::fromJSON(url)
+  return(tmp)
+}
 
-knitr::kable(tmptbl,format="markdown")
+get_vtable <- function(aid=1873150,tmp){
+    tmptbl <-
+    tmp$data %>%
+    select(page, part) %>%
+    mutate(part = paste0(
+      "[",
+      part,
+      "](https://www.bilibili.com/video/av",aid,"/#page=",
+      page,
+      ")"
+    ))
+}
+
+
 
 ```
 
+## update list pages
+
+```{r}
+post_path="~/GIT/owaraisite/content/post"
+p= list.files(post_path)
+oldaid <- 
+  ((gsub('^.*-(.*).md$','\\1',p)))
+
+mylist <- lapply(oldaid,getlist)
+
+```
+
+```{r}
+test <-getlist(aid=3704153)
+```
+
+```{r}
+test2 <- get_vtable(aid=3704153,tmp=test)
+```
 

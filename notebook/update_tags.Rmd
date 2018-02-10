@@ -23,9 +23,16 @@ tag_cat <- function(fp) {
   bangpos=grep("^bangumis:", fp)
   catpos=grep("^categories:", fp)
   tagpos=grep("^tags:", fp)
-  
-  if(catpos < tagpos) catpos=bangpos
-  
+  if (length(bangpos) == 0 | length(catpos) == 0 | length(tagpos) == 0){
+#    message("0 detected")
+#    writeLines(fp)
+    return(fp)
+  }
+  if(catpos < tagpos) {
+ #   message(catpos," ",bangpos)
+    catpos=bangpos
+  }
+#  message("### positions",tagpos," ",catpos)
   fp[tagpos:catpos] <- tolower(fp[tagpos:catpos])
 #  mytags <- fp[tagpos:catpos]
   badtags <- grep(BADTAG_REGEX,fp)

@@ -1,4 +1,4 @@
-annotate_vlist <- function(vlist.new) {
+annotate_vlist <- function(vlist.new, imgur=TRUE) {
   library(dplyr)
   library(lubridate)
 
@@ -61,16 +61,22 @@ annotate_vlist <- function(vlist.new) {
   }
   message("\n...cid, tags, categories, bangumis finished, uploading front cover to imgur")
 
-  for (i in 1:nrow(vlist.new.anno)) {
-    vlist.new.anno$imgur[i] <- api_upload_imgur(vlist.new.anno$pic[i])
+  if(imgur) {
+    for (i in 1:nrow(vlist.new.anno)) {
+      vlist.new.anno$imgur[i] <- api_upload_imgur(vlist.new.anno$pic[i])
+    }
   }
+  else {
+
+  }
+
   # vlist.new.anno$zmz="伦敦之心字幕组"
   # vlist.new.anno$author=vlist.new$author
   # vlist.new.anno$up=vlist.new.anno$author
   # vlist.new.anno$bangumi=tolower(vlist.new.anno$bangumi)
 
 
-## text
+  ## text
   vlist.new.anno <- vlist.new.anno %>%
     mutate(
       text = paste0(
@@ -83,9 +89,9 @@ annotate_vlist <- function(vlist.new) {
         "\n[去B站观看](https://www.bilibili.com/video/av",
         aid,
         "/)\n",
- #       '\n<div class="vcontainer">  <iframe class="video" src="//www.bilibili.com/blackboard/player.html?aid=',
-  #      aid,
-   #     '" width="100%" height="500" frameborder="0" allowfullscreen="allowfullscreen"></iframe></div>'
+        #       '\n<div class="vcontainer">  <iframe class="video" src="//www.bilibili.com/blackboard/player.html?aid=',
+        #      aid,
+        #     '" width="100%" height="500" frameborder="0" allowfullscreen="allowfullscreen"></iframe></div>'
         " "
       )
     )

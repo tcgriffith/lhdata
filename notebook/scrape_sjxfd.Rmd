@@ -12,10 +12,6 @@ library(lubridate)
 pkg_path="~/GIT/lhdata"
 post_path="~/GIT/owaraisite/content/post/"
 
-if (Sys.info()["sysname"]=="Windows"){
-  pkg_path="c:/Users/TC/GIT/lhdata"
-  post_path="c:/Users/TC/GIT/owaraisite/content/post/"
-}
 
 source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getuploads.R"))
 source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getuploads_fp.R"))
@@ -25,14 +21,9 @@ source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_aid2cid.R"))
 source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getbilitags.R"))
 source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_upload_imgur.R"))
 source(encoding="UTF-8",file=paste0(pkg_path,"/R/generate_posts2.R"))
-source(encoding="UTF-8",file=paste0(pkg_path,"/R/annotate_vlist_tmp.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/annotate_vlist.R"))
 load(paste0(pkg_path,"/data/mid.rda"))
-
-if (file.exists("/data/manual_filter.rda")){
-  load(paste0(pkg_path,"/data/manual_filter.rda"))
-}else {
-  manual_filter=data.frame(aid=NA)
-}
+load(paste0(pkg_path,"/data/manual_filter.rda"))
 ```
 
 ```{r eval=FALSE}
@@ -107,8 +98,6 @@ message(paste0("...scraping finished, ",nrow(vlist.new)," new posts"))
 if (nrow(vlist.new)==0) {
   message("...no new post detected, quitting script")
   q('no')
-} else{
-  writeLines(vlist.new$title)
 }
 
 ```
@@ -122,9 +111,9 @@ save(manual_filter,file=paste0(pkg_path,"/data/manual_filter.rda"))
 ```
 
 ```{r test, eval=FALSE}
-vlist.new <-api_getuploads(5858153,kw = "翻唱")
+vlist.new <-api_getuploads(5738638)
 
-vlist.new$zmz="伦敦之心字幕组"
+vlist.new$zmz="生姜小分队字幕组"
 
 #vlist.new.anno$zmz="伦敦之心字幕组"
 ```
@@ -138,7 +127,7 @@ vlist.new$zmz="伦敦之心字幕组"
 message("###########################################################")
 message("...starting downloading pics\n")
 #source("../R/annotate_vlist.R")
-vlist.new.anno <-annotate_vlist(vlist.new,imgur = FALSE)
+vlist.new.anno <-annotate_vlist(vlist.new)
 
 ```
 
@@ -153,11 +142,4 @@ generate_post2(vlist.new.anno,post_path)
 ```
 
 
-
-
-## test
-
-```{r}
-api_upload_imgur()
-```
 
