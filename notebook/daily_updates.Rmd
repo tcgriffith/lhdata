@@ -26,6 +26,8 @@ source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getbilitags.R"))
 source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_upload_imgur.R"))
 source(encoding="UTF-8",file=paste0(pkg_path,"/R/generate_posts2.R"))
 source(encoding="UTF-8",file=paste0(pkg_path,"/R/annotate_vlist_tmp.R"))
+
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/annotate_vlist.R"))
 load(paste0(pkg_path,"/data/mid.rda"))
 
 if (file.exists("/data/manual_filter.rda")){
@@ -138,7 +140,7 @@ vlist.new$zmz="伦敦之心字幕组"
 message("###########################################################")
 message("...starting downloading pics\n")
 #source("../R/annotate_vlist.R")
-vlist.new.anno <-annotate_vlist(vlist.new,imgur = FALSE)
+vlist.new.anno <-annotate_vlist(vlist.new)
 
 ```
 
@@ -157,7 +159,7 @@ generate_post2(vlist.new.anno,post_path)
 
 ## test
 
-```{r}
+```{r eval=FALSE}
 api_upload_imgur()
 ```
 
