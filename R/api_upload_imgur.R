@@ -9,12 +9,12 @@ api_upload_imgur <- function(pic) {
     "ffmpeg -y -i /tmp/",
     basename(pic),
     " -vf scale=480:-1 /tmp/",
-    paste0(basename(pic), ".480.png")
+    paste0(basename(pic), ".480.jpg")
   ),ignore.stdout = TRUE,ignore.stderr = TRUE) # ffmpeg usually works fine, suppress stderr
 #  Sys.sleep(4)
   imgururl <-
     knitr::imgur_upload(file = paste0("/tmp/", paste0(
-      basename(pic), ".480.png"
+      basename(pic), ".480.jpg"
     )))
 
   return(imgururl)
