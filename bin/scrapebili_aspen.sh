@@ -1,3 +1,4 @@
+#!/bin/bash -i
 # crontab run every 2 hours
 
 # crontab -l
