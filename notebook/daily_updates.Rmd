@@ -123,6 +123,9 @@ manual_filter <- data.frame(aid=oldaid)
 save(manual_filter,file=paste0(pkg_path,"/data/manual_filter.rda"))
 ```
 
+## manually fetching
+
+
 ```{r test, eval=FALSE}
 vlist.new <-api_getuploads(5858153,kw = "翻唱")
 
@@ -130,6 +133,28 @@ vlist.new$zmz="伦敦之心字幕组"
 
 #vlist.new.anno$zmz="伦敦之心字幕组"
 ```
+
+
+```{r test2, eval=FALSE}
+##三葉__ 东京03
+
+vlist.new <-api_getuploads(119571380,kw = "短剧+字幕")
+
+vlist.new$zmz="个人字幕组"
+
+#vlist.new.anno$zmz="伦敦之心字幕组"
+```
+
+```{r test3, eval=FALSE}
+# akihoni 东京03 412335
+
+vlist.new <-api_getuploads(412335,kw = "东京03+字幕")
+
+vlist.new$zmz="个人字幕组"
+
+
+```
+
 
 
 ## add info
