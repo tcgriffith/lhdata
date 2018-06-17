@@ -8,6 +8,8 @@
 #'
 #' @examples
 api_getuploads_fp <- function(mid, kw = "") {
+  library(httr)
+  set_config(config(ssl_verifypeer = 0L))
   fpurl = paste0(
     "https://space.bilibili.com/ajax/member/getSubmitVideos?mid=",
     mid,
