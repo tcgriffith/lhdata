@@ -155,6 +155,14 @@ vlist.new$zmz="个人字幕组"
 
 ```
 
+```{r test4, eval=FALSE}
+# 长野县名产翅膀 ametalk 1464994
+
+vlist.new <-api_getuploads(1464994,kw = "ametalk+字幕")
+
+vlist.new$zmz="个人字幕组"
+
+```
 
 
 ## add info
