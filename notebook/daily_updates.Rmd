@@ -26,6 +26,7 @@ source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getbilitags.R"))
 source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_upload_imgur.R"))
 source(encoding="UTF-8",file=paste0(pkg_path,"/R/generate_posts2.R"))
 source(encoding="UTF-8",file=paste0(pkg_path,"/R/annotate_vlist_tmp.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/fromJSON_fix.R"))
 
 source(encoding="UTF-8",file=paste0(pkg_path,"/R/annotate_vlist.R"))
 load(paste0(pkg_path,"/data/mid.rda"))
@@ -161,6 +162,22 @@ vlist.new$zmz="个人字幕组"
 vlist.new <-api_getuploads(1464994,kw = "ametalk+字幕")
 
 vlist.new$zmz="个人字幕组"
+
+```
+
+
+
+```{r test5, eval= FALSE}
+# 汉中则为橙 381936 ametalk 
+
+
+vlist.new <-api_getuploads(381936,kw = "字幕")
+
+vlist.new <- vlist.new %>%
+  filter(grepl("ametalk|rahmens|speedwagon",title,ignore.case = TRUE))
+
+vlist.new$zmz="个人字幕组"
+
 
 ```
 

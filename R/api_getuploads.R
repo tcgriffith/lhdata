@@ -18,7 +18,7 @@ api_getuploads <- function(mid, kw = "") {
     "&order=pubdate"
   )
 
-  test2 <- jsonlite::fromJSON(fpurl)
+  test2 <- fromJSON_fix(fpurl)
   vlist.df <- test2$data$vlist
   message(paste0("pages received: ",test2$data$pages))
   if (test2$data$pages > 1)
@@ -34,7 +34,7 @@ api_getuploads <- function(mid, kw = "") {
         kw,
         "&order=pubdate"
       )
-      ajson <- jsonlite::fromJSON(aurl)
+      ajson <- fromJSON_fix(aurl)
       avlist <- ajson$data$vlist
       vlist.df <- rbind(vlist.df, avlist)
     }
