@@ -45,7 +45,7 @@ annotate_vlist <- function(vlist.new, imgur=TRUE) {
 
   ## have to use loop
   for (i in 1:nrow(vlist.new.anno)) {
-    vlist.new.anno$cid[i] <- api_aid2cid(vlist.new.anno$aid[i])
+    # vlist.new.anno$cid[i] <- api_aid2cid(vlist.new.anno$aid[i])
     vlist.new.anno$tags[i] <-
       I(api_getbilitags(vlist.new.anno$aid[i]))
     vlist.new.anno$categories[i] <-
