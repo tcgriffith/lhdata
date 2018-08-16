@@ -186,6 +186,12 @@ vlist.new <- vlist.newm %>%
   filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
 
 
+
+
+```
+
+```{r eval=FALSE}
+ vlist.new <- vlist.new[1,]
 ```
 
 

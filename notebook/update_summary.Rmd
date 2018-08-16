@@ -1,0 +1,64 @@
+---
+title: "Untitled"
+author: "TC"
+date: "8/16/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r}
+
+library(tidyverse)
+```
+
+```{r}
+update_summary <- function(filepath) {
+  file = xfun::file_string(filepath)
+  mycontent <- gsub("^.*---(.*)$", "\\1", file)
+  if (!grepl("简介", file)) return(file)
+  if (grepl("brief:", file)) return(file)
+  
+  mybrief <- gsub(".*(# 简介.*?)(<|\\[).*", "\\1", file)
+  mybrief <- gsub("\"","",mybrief)
+  
+  mybrief <- stringr::str_squish(mybrief)
+  # mybrief <- xfun::raw_string(mybrief)
+  
+  
+  newcontent <- gsub("^(.*---.*)(---.*$)",paste0("\\1",'\nbrief: "',mybrief ,'"\n\\2'),file)
+  
+  
+  newcontent.raw <- xfun::raw_string(newcontent)
+  return(newcontent.raw)
+}
+
+```
+
+
+```{r}
+
+listf <- list.files("~/GIT/owaraisite/content/post/", "*md", full.names = TRUE)
+
+# listf <- list.files("~/GIT/testit/", "*md", full.names = TRUE)
+
+for (f in listf) {
+  newf <- update_summary(f)
+  
+  xfun::write_utf8(newf, f)
+}
+```
+
+```{r}
+
+myfile = "~/GIT/owaraisite/content/post/2017-10-16-150419-2459503.md"
+
+update_summary(myfile)
+```
+
+

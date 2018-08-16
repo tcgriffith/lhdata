@@ -20,7 +20,8 @@ generate_post2 <- function(dfa, foldpath) {
         weight,
         categories,
         tags,
-        bangumis
+        bangumis,
+        desc,
       )
 
     filepath = paste0(
@@ -55,6 +56,10 @@ generate_post2 <- function(dfa, foldpath) {
     header$tags = df.min$tags %>% unlist() %>% as.list()
     header$categories = df.min$categories %>% unlist() %>% as.list()
 
+    mybrief = df.min$desc %>% gsub("\"","",.) %>% stringr::str_squish()
+
+    mybrief = paste0("brief: ",'"',mybrief,'"')
+
     text <- df$text
 
 #    z = c(jsonlite::toJSON(header, auto_unbox = TRUE, pretty = TRUE), text)
@@ -64,6 +69,7 @@ generate_post2 <- function(dfa, foldpath) {
              indent = 2,
              indent.mapping.sequence = TRUE
            ),
+           mybrief,
            "---",
            text)
     fileConn <- file(filepath)
