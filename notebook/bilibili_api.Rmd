@@ -24,12 +24,12 @@ test <- jsonlite::fromJSON(url)
 ## ok it's working
 ## https://gist.github.com/mimosa/de0534f98344c669e79a473b1213275b
 
-
+ 
 getcid <-function(aid=NA){
  
-  url2 = paste0("http://www.bilibili.com/widget/getPageList?aid=",aid)
+  url2 = paste0("https://api.bilibili.com/x/player/pagelist?jsonp=jsonp&aid=",aid)
   test2 <- jsonlite::fromJSON(url2)
-  return(test2$cid)
+  return(test2$data$cid[[1]])
 
 }
 
@@ -51,5 +51,10 @@ test3 <- jsonlite::fromJSON(url3)
 
 ```
 
+```{r}
+  aid = 15112800
+  url2 = paste0("https://api.bilibili.com/x/player/pagelist?jsonp=jsonp&aid=",aid)
+  test2 <- jsonlite::fromJSON(url2)
+```
 
 

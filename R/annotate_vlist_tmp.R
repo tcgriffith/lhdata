@@ -1,3 +1,15 @@
+#' Title annotate_vlist
+#'
+#' annotate necessary info to generate posts,
+#'
+#'
+#' @param vlist.new
+#'
+#' @return vlist.new.anno
+#' @export
+#'
+
+
 annotate_vlist <- function(vlist.new, imgur=TRUE) {
   library(dplyr)
   library(lubridate)
@@ -45,7 +57,7 @@ annotate_vlist <- function(vlist.new, imgur=TRUE) {
 
   ## have to use loop
   for (i in 1:nrow(vlist.new.anno)) {
-    # vlist.new.anno$cid[i] <- api_aid2cid(vlist.new.anno$aid[i])
+    vlist.new.anno$cid[i] <- api_aid2cid(vlist.new.anno$aid[i])
     vlist.new.anno$tags[i] <-
       I(api_getbilitags(vlist.new.anno$aid[i]))
     vlist.new.anno$categories[i] <-
@@ -80,15 +92,13 @@ annotate_vlist <- function(vlist.new, imgur=TRUE) {
   vlist.new.anno <- vlist.new.anno %>%
     mutate(
       text = paste0(
-        "![](",
-        imgur,
-        ")\n",
+        "![](",imgur,")\n",
         "# 简介  \n",
-        desc,
-        "  \n",
-        "\n[去B站观看](https://www.bilibili.com/video/av",
-        aid,
-        "/)\n",
+        desc,"  \n",
+        "\n[去B站观看](https://www.bilibili.com/video/av",aid,"/)\n",
+        '<div class ="resp-container">',
+          '<iframe class="testiframe" src="//player.bilibili.com/player.html?aid=', aid,'"", scrolling="no", allowfullscreen="true" > </iframe>',
+        '</div>',
         #       '\n<div class="vcontainer">  <iframe class="video" src="//www.bilibili.com/blackboard/player.html?aid=',
         #      aid,
         #     '" width="100%" height="500" frameborder="0" allowfullscreen="allowfullscreen"></iframe></div>'

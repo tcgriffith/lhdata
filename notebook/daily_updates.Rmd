@@ -90,7 +90,7 @@ message("...start scraping\n")
 
 vlist.all <- data.frame()
 
-for ( i in c(1,4,5,6)){
+for ( i in c(1,4:7)){
   vlist <- api_getuploads_fp(mid.df$mids[i],kw=mid.df$kw[i])
   vlist$zmz=mid.df$zmz[i]
   vlist.all <- rbind(vlist.all,vlist)

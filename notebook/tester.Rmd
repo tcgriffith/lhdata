@@ -1,0 +1,47 @@
+---
+title: "tester"
+author: "TC"
+date: "8/29/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_upload_imgur.R"))
+```
+
+## R Markdown
+
+```{r}
+# api_upload_imgur("/tmp/54215ef641f1de22abeaa9174ba6622c2ac7ece4.jpg.480.jpg")
+
+
+  imgururl <-
+    knitr::imgur_upload(file = "/tmp/54215ef641f1de22abeaa9174ba6622c2ac7ece4.jpg.480.jpg")
+```
+
+
+```{r}
+file = "/tmp/54215ef641f1de22abeaa9174ba6622c2ac7ece4.jpg.480.jpg"
+  
+resp = httr::POST("https://api.imgur.com/3/image.xml", config = httr::add_headers(Authorization = paste("Client-ID", 
+        "9f3460e67f308f6")), body = list(image = httr::upload_file(file)))
+```
+
+
+```{r}
+res = httr::content(resp, as = "raw")
+
+res = xml2::as_list(xml2::read_xml(res))
+```
+
+
+```{r}
+tmp <- httr::upload_file(file)
+```
+
+
+```{r}
+knitr::imgur_upload
+```
+
