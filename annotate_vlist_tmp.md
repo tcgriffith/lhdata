@@ -1,15 +1,16 @@
-#' Title annotate_vlist
-#'
-#' annotate necessary info to generate posts,
-#'
-#'
-#' @param vlist.new
-#'
-#' @return vlist.new.anno
-#' @export
-#'
+Title annotate_vlist
+
+annotate necessary info to generate posts,
 
 
+@param vlist.new
+
+@return vlist.new.anno
+@export
+
+
+
+```r
 annotate_vlist <- function(vlist.new, imgur=TRUE) {
   library(dplyr)
   library(lubridate)
@@ -107,3 +108,5 @@ annotate_vlist <- function(vlist.new, imgur=TRUE) {
     )
   return(vlist.new.anno)
 }
+```
+

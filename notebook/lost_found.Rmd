@@ -1,0 +1,219 @@
+---
+title: "Untitled"
+author: "TC"
+date: "9/25/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+  # library(dplyr)
+  library(lubridate)
+
+source("../R/getyearsdf.R")
+# source("../R/generate_posts2.R")
+source("../R/getbangumi.R")
+```
+
+
+## R Markdown
+
+```{r}
+df <- data.table::fread("../data/outsideVideoXlsx.csv")
+
+vlist.new <- df %>%
+  rename(title = 1) %>%
+  mutate(
+         created = Sys.time(),
+         author = "伦敦之心字幕组",
+         zmz = "伦敦之心字幕组",
+         aid = "NA",
+         description = "拾遗 神舌",
+         imgur = "https://i.imgur.com/ulc7nb8.jpg",
+         tags = NA,
+         iframe = gsub(".*(https.*?)\"\".*","\\1",iframe代码),
+         id = gsub(".*channel\\/(.*?)\\/.*","\\1",链接)
+         )
+```
+
+```{r}
+annotate_vlist <- function(vlist.new, imgur=TRUE) {
+  
+  vlist.new.anno <- vlist.new
+  # class(vlist.new.anno$created) <- "POSIXct"
+
+  vlist.new.anno <- vlist.new.anno %>%
+    mutate(up = author) %>%
+    mutate(bangumi = tolower(getbangumi(title))) %>%
+    mutate(title_bk = title,
+           title = gsub("【.*?】", "", title_bk)) %>%
+    mutate(airdate = getyearsdf(title)) %>%
+    mutate(slug = paste0(
+      format(created, "%y%m%d"),
+      "-",
+      format(airdate, "%y%m%d"),
+      "-",
+      id
+    )) %>%
+    mutate(desc = description) %>%
+    mutate(description = paste0(bangumi, "&#8226;", format(airdate, "%y%m%d"))) %>%
+    #  mutate(categories=I(list()))
+    mutate(date = Sys.time()) %>%
+    mutate(publishdate = ifelse(
+      is.na(airdate),
+      format(
+        lubridate::parse_date_time("20010103", orders = "Y-m-d"),
+        "%Y-%m-%d"
+      ),
+      format(airdate, "%Y-%m-%d")
+    )) %>%
+    # mutate(weight = ifelse(is.na(airdate), 200000, 200000 - as.numeric(format(
+    #   publishdate, "%y%m%d"
+    # ))))
+    mutate(weight = 200000 - as.numeric(format(date,"%y%m%d"))) %>%
+    mutate(date=format(date,"%Y-%m-%d"))
+
+
+  ## unable to vectorize, use for lists
+  vlist.new.anno$cid = NA
+  # vlist.new.anno$imgur = NA
+  vlist.new.anno$tags = NA
+  vlist.new.anno$categories = NA
+
+
+  ## have to use loop
+  for (i in 1:nrow(vlist.new.anno)) {
+    vlist.new.anno$categories[i] <-
+      I(list(c(
+        vlist.new.anno$zmz[i], vlist.new.anno$author[i]
+      )))
+    vlist.new.anno$bangumis[i] <- I(list(vlist.new.anno$bangumi[i]))
+    vlist.new.anno$author[i] = I(list(unique(
+      c(vlist.new.anno$zmz[i], vlist.new.anno$author[i])
+    )))
+
+  }
+
+  ## text
+  vlist.new.anno <- vlist.new.anno %>%
+    mutate(
+      text = paste0(
+        "![](",imgur,")\n",
+        "# 简介  \n",
+        desc,"  \n",
+        
+        '<div class ="resp-container">\n',
+        
+        '<iframe class="testiframe" src="',iframe,'" frameborder=0 allowfullscreen="true" ></iframe>\n',
+        
+        '</div>\n'
+        
+        
+        # "\n[去B站观看](https://www.bilibili.com/video/av",aid,"/)\n",
+        # '<div class ="resp-container">',
+        #   '<iframe class="testiframe" src="//player.bilibili.com/player.html?aid=', aid,'"", scrolling="no", allowfullscreen="true" > </iframe>',
+        # '</div>',
+        
+
+      )
+    )
+  return(vlist.new.anno)
+}
+```
+
+
+```{r}
+tmp <- annotate_vlist(vlist.new)
+```
+
+
+
+```{r}
+generate_post3 <- function(dfa, foldpath) {
+  # library(dplyr)
+
+
+
+
+  for (i in 1:nrow(dfa)) {
+
+    df <- dfa[i, ]
+    df.min <- dfa[i, ] %>%
+      select(
+        title,
+        author,
+        zmz,
+        publishdate,
+        bangumi,
+        date,
+        slug,
+        description,
+        weight,
+        categories,
+        tags,
+        bangumis,
+        desc,
+      )
+
+    filepath = paste0(
+      foldpath,
+      "/",df.min$slug,
+      ".md"
+    )
+    # message(filepath)
+
+
+    header <-
+      as.list(
+        df.min %>% select(
+          title,
+          author,
+          zmz,
+          publishdate,
+          bangumi,
+          date,
+          slug,
+          description,
+          weight
+        )
+      )
+
+    header$author = df.min$author %>% unlist() %>% as.list()
+    header$bangumis = df.min$bangumis %>% unlist() %>% as.list()
+    header$tags = df.min$tags %>% unlist() %>% as.list()
+    header$categories = df.min$categories %>% unlist() %>% as.list()
+
+    mybrief = df.min$desc %>% gsub("\"","",.) %>% stringr::str_squish()
+
+    mybrief = paste0("brief: ",'"',mybrief,'"')
+
+    text <- df$text
+
+#    z = c(jsonlite::toJSON(header, auto_unbox = TRUE, pretty = TRUE), text)
+    z2 = c("---",
+           yaml::as.yaml(
+             header,
+             indent = 2,
+             indent.mapping.sequence = TRUE
+           ),
+           mybrief,
+           "---",
+           text)
+    fileConn <- file(filepath)
+    writeLines(z2, fileConn)
+    close(fileConn)
+    message(paste0(filepath," finished!"))
+
+
+  }
+}
+
+```
+
+```{r}
+folder = "~/GIT/owaraisite/content/lost_found/"
+
+generate_post3(tmp, foldpath = folder)
+```
+
