@@ -48,21 +48,24 @@ mid.df <- data.frame(mids = c(5382023,
                               26666749,
                               97990,
                               8665350,
-                              381936),
+                              381936,
+                              764931),
                      author = c("九條",
                                 "莱姆籽",
                                 "天翼羽魂",
                                 "来一发就走字幕组",
                                 "小山君",
                                 "叔叔",
-                                "汉中则为橙"),
+                                "汉中则为橙",
+                                "sclarkca_"),
                      zmz = c("伦敦之心字幕组",
                              "伦敦之心字幕组",
                              "伦敦之心字幕组",
                              "来一发就走字幕组",
                              "大喜利王字幕组",
                              "4431字幕组",
-                             "风物诗字幕组"
+                             "风物诗字幕组",
+                             "hitori字幕组"
                              ),
                      kw = c("",
                             "伦敦之心字幕组",
@@ -70,7 +73,8 @@ mid.df <- data.frame(mids = c(5382023,
                             "",
                             "",
                             "字幕",
-                            "风物诗字幕组"),
+                            "风物诗字幕组",
+                            "字幕"),
                      stringsAsFactors = FALSE)
 save(mid.df,file=paste0(pkg_path,"/data/mid.rda"))
 
@@ -90,7 +94,7 @@ message("...start scraping\n")
 
 vlist.all <- data.frame()
 
-for ( i in c(1,4:7)){
+for ( i in c(1,4:8)){
   vlist <- api_getuploads_fp(mid.df$mids[i],kw=mid.df$kw[i])
   vlist$zmz=mid.df$zmz[i]
   vlist.all <- rbind(vlist.all,vlist)
@@ -194,8 +198,27 @@ vlist.new <- vlist.newm %>%
 
 ```
 
-```{r eval=FALSE}
- vlist.new <- vlist.new[1,]
+```{r test5, eval= FALSE}
+# sclarkca_ 764931 字幕 
+
+
+vlist.newm <-api_getuploads(764931,kw = "字幕")
+
+# vlist.new <- vlist.new %>%
+#   filter(grepl("ametalk|rahmens|speedwagon",title,ignore.case = TRUE))
+
+vlist.newm$zmz="风物诗字幕组"
+
+p= list.files(post_path)
+oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+
+
+vlist.new <- vlist.newm %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
+
+
+
+
 ```
 
 
