@@ -40,6 +40,8 @@ if (file.exists("/data/manual_filter.rda")){
 
 
 
+
+
 ```{r test5, eval= FALSE}
 # sclarkca_ 764931 字幕 
 
@@ -63,6 +65,26 @@ vlist.new <- vlist.newm %>%
 
 ```
 
+```{r}
+# clos 385066467 字幕 
+
+
+vlist.newm <-api_getuploads(385066467,kw = "字幕")
+
+# vlist.new <- vlist.new %>%
+#   filter(grepl("ametalk|rahmens|speedwagon",title,ignore.case = TRUE))
+
+vlist.newm$zmz="冲绳六岁小女孩字幕组"
+
+p= list.files(post_path)
+oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+
+
+vlist.new <- vlist.newm %>%
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
+
+
+```
 
 ## add info
 
@@ -72,7 +94,7 @@ vlist.new <- vlist.newm %>%
 message("###########################################################")
 message("...starting downloading pics\n")
 #source("../R/annotate_vlist.R")
-vlist.new.anno <-annotate_vlist(vlist.new[19:22,])
+vlist.new.anno <-annotate_vlist(vlist.new)
 
 generate_post2(vlist.new.anno,post_path)
 

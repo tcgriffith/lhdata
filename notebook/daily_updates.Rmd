@@ -29,7 +29,7 @@ source(encoding="UTF-8",file=paste0(pkg_path,"/R/annotate_vlist_tmp.R"))
 source(encoding="UTF-8",file=paste0(pkg_path,"/R/fromJSON_fix.R"))
 
 # source(encoding="UTF-8",file=paste0(pkg_path,"/R/annotate_vlist.R"))
-load(paste0(pkg_path,"/data/mid.rda"))
+# load(paste0(pkg_path,"/data/mid.rda"))
 
 if (file.exists("/data/manual_filter.rda")){
   load(paste0(pkg_path,"/data/manual_filter.rda"))
@@ -78,9 +78,9 @@ mid.df <- data.frame(mids = c(5382023,
                             "字幕",
                             "风物诗字幕组",
                             "字幕",
-                            "水曜侦探事务所"),
+                            "中字"),
                      stringsAsFactors = FALSE)
-save(mid.df,file=paste0(pkg_path,"/data/mid.rda"))
+# save(mid.df,file=paste0(pkg_path,"/data/mid.rda"))
 
 ```
 
