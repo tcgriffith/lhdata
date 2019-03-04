@@ -31,7 +31,7 @@ getbangumi <- function(vector){
     mutate(bangumi = ifelse(grepl("IPPON",vector,ignore.case = TRUE),"IPPON",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("ENGEI",vector,ignore.case = TRUE),"ENGEI",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("红白",vector),"红白模仿歌合战",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("gaki使",vector),"gaki使",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("gaki使",vector,ignore.case = TRUE),"gaki使",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("全员逃走中",vector),"全员逃走中",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("整人大赏",vector),"整人大赏",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("洒落主义",vector),"洒落主义",bangumi)) %>%
@@ -39,7 +39,7 @@ getbangumi <- function(vector){
     mutate(bangumi = ifelse(grepl("娱乐之神",vector),"娱乐之神",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("内村照",vector),"内村照",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("海王星.*rola",vector),"海王星rola的爆笑归纳",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("痛快TV",vector),"痛快TV",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("痛快TV",vector,ignore.case = TRUE),"痛快TV",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("香蕉小木矢黛丽",vector),"香蕉小木矢黛丽的各种各样的话题",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("漫才|短剧",vector),"段子",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("秋刀鱼饭",vector),"秋刀鱼饭",bangumi)) %>%
