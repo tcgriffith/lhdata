@@ -1,0 +1,89 @@
+---
+title: "Untitled"
+author: "TC"
+date: "3/4/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+## R Markdown
+
+
+```{r}
+mds = list.files("~/GIT/owaraisite/content/", recursive=TRUE, pattern = "[0-9].*-.*.md", full.names=TRUE)
+```
+
+```{r}
+a = basename(mds)
+
+a2 =gsub("^(.*?)\\..*","\\1", a)
+```
+
+```{r}
+# b =lapply()
+
+b = sapply(mds, function(fn){
+  x = readLines(fn)
+  slug = grep("^slug: (.*)$", x, value= TRUE)
+  
+  slug2 = gsub("^slug: (.*)$","\\1", slug)
+  
+  return(slug2)
+})
+
+
+# x = readLines(mds[2])
+
+
+```
+
+```{r}
+df = data.frame(mds, a2,b, stringsAsFactors= FALSE, row.names= NULL)
+```
+
+```{r}
+df2 = df %>%
+  filter(a2 != b)
+```
+
+
+```{r}
+fixit = function(record){
+  fn = record[[1]]
+  newslug = record[[2]]
+  oldslug = record[[3]]
+
+  x = readLines(con = fn)
+  xnew = gsub(oldslug, newslug, x)
+  # return(xnew)
+  writeLines(xnew, fn)
+  
+  print(paste0(fn, " fixed !"))
+}
+```
+
+```{r}
+# fixit(df2[1,])
+```
+
+
+```{r}
+lapply(1:nrow(df2), function(i){
+  fixit(df2[i,])
+})
+```
+
+
+
+```{r}
+readLines(mds[1])
+```
+
+

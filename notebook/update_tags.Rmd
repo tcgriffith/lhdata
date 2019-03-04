@@ -87,7 +87,7 @@ tag_ed <- length(removelogs)
 message("removelogs: ",tag_ed - tag_bg)
 ```
 
-```{r}
+```{r eval=FALSE}
 
 save(removelogs,file=paste0(pkg_path,"/data/removetags.rda"))
 ```

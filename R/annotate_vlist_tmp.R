@@ -24,7 +24,7 @@ annotate_vlist <- function(vlist.new, imgur=TRUE) {
            title = gsub("【.*?】", "", title_bk)) %>%
     mutate(airdate = getyearsdf(title)) %>%
     mutate(slug = paste0(
-      format(created, "%y%m%d"),
+      format(created, "%Y-%m-%d"),
       "-",
       format(airdate, "%y%m%d"),
       "-",
