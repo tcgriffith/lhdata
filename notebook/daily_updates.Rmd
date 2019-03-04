@@ -38,47 +38,54 @@ if (file.exists("/data/manual_filter.rda")){
 }
 ```
 
+
+
+
 ```{r}
 
 
 
 mid.df <- data.frame(mids = c(5382023,
-                              207626,
-                              2301165,
+                              # 207626,
+                              # 2301165,
                               26666749,
                               97990,
                               8665350,
                               381936,
                               764931,
-                              2916169),
+                              2916169,
+                              402556474),
                      author = c("九條",
-                                "莱姆籽",
-                                "天翼羽魂",
+                                # "莱姆籽",
+                                # "天翼羽魂",
                                 "来一发就走字幕组",
                                 "小山君",
                                 "叔叔",
                                 "汉中则为橙",
                                 "sclarkca_",
-                                "Babyhellface"),
+                                "Babyhellface",
+                                "6222C字幕组"),
                      zmz = c("伦敦之心字幕组",
-                             "伦敦之心字幕组",
-                             "伦敦之心字幕组",
+                             # "伦敦之心字幕组",
+                             # "伦敦之心字幕组",
                              "来一发就走字幕组",
                              "大喜利王字幕组",
                              "4431字幕组",
                              "风物诗字幕组",
                              "hitori字幕组",
-                             "水曜侦探事务所(仮)"
+                             "水曜侦探事务所(仮)",
+                             "6222C字幕组"
                              ),
                      kw = c("",
-                            "伦敦之心字幕组",
-                            "人力",
+                            # "伦敦之心字幕组",
+                            # "人力",
                             "",
                             "",
                             "字幕",
                             "风物诗字幕组",
                             "字幕",
-                            "中字"),
+                            "中字",
+                            "字幕"),
                      stringsAsFactors = FALSE)
 # save(mid.df,file=paste0(pkg_path,"/data/mid.rda"))
 
@@ -98,7 +105,7 @@ message("...start scraping\n")
 
 vlist.all <- data.frame()
 
-for ( i in c(1,4:9)){
+for ( i in 1:nrow(mid.df)){
   vlist <- api_getuploads_fp(mid.df$mids[i],kw=mid.df$kw[i])
   vlist$zmz=mid.df$zmz[i]
   vlist.all <- rbind(vlist.all,vlist)
