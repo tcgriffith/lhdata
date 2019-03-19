@@ -237,7 +237,7 @@ vlist.new <- vlist.newm %>%
 ```
 
 
-```{r test4, eval=FALSE}
+```{r test7, eval=FALSE}
 # nonkotori 576772
 
 vlist.newm <-api_getuploads(576772,kw = "字幕")
