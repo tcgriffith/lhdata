@@ -54,7 +54,8 @@ mid.df <- data.frame(mids = c(5382023,
                               381936,
                               764931,
                               2916169,
-                              402556474),
+                              402556474,
+                              576772),
                      author = c("九條",
                                 # "莱姆籽",
                                 # "天翼羽魂",
@@ -64,7 +65,8 @@ mid.df <- data.frame(mids = c(5382023,
                                 "汉中则为橙",
                                 "sclarkca_",
                                 "Babyhellface",
-                                "6222C字幕组"),
+                                "6222C字幕组",
+                                "nonkotori"),
                      zmz = c("伦敦之心字幕组",
                              # "伦敦之心字幕组",
                              # "伦敦之心字幕组",
@@ -74,7 +76,8 @@ mid.df <- data.frame(mids = c(5382023,
                              "风物诗字幕组",
                              "hitori字幕组",
                              "水曜侦探事务所(仮)",
-                             "6222C字幕组"
+                             "6222C字幕组",
+                             "nonkotori字幕组"
                              ),
                      kw = c("",
                             # "伦敦之心字幕组",
@@ -85,6 +88,7 @@ mid.df <- data.frame(mids = c(5382023,
                             "风物诗字幕组",
                             "字幕",
                             "中字",
+                            "字幕",
                             "字幕"),
                      stringsAsFactors = FALSE)
 # save(mid.df,file=paste0(pkg_path,"/data/mid.rda"))
@@ -229,6 +233,23 @@ vlist.new <- vlist.newm %>%
 
 
 
+
+```
+
+
+```{r test4, eval=FALSE}
+# nonkotori 576772
+
+vlist.newm <-api_getuploads(576772,kw = "字幕")
+
+vlist.newm$zmz="nonkotori字幕组"
+
+p= list.files(post_path)
+oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+
+
+vlist.new <- vlist.newm %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
 
 ```
 
