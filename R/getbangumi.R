@@ -25,7 +25,7 @@ getbangumi <- function(vector){
     mutate(bangumi = ifelse(grepl("不准笑",vector),"24小时不准笑",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("有吉反省会",vector),"有吉反省会",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("今夜比一比",vector),"今夜比一比",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("星期三的市中心|水曜日的",vector),"水曜日的DOWNTOWN",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("星期三的|水曜日的",vector),"水曜日的DOWNTOWN",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("有吉之壁",vector),"有吉之壁",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("行列法律",vector),"行列法律相谈所",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("IPPON",vector,ignore.case = TRUE),"IPPON",bangumi)) %>%
@@ -43,6 +43,7 @@ getbangumi <- function(vector){
     mutate(bangumi = ifelse(grepl("香蕉小木矢黛丽",vector),"香蕉小木矢黛丽的各种各样的话题",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("漫才|短剧",vector),"段子",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("秋刀鱼饭",vector),"秋刀鱼饭",bangumi)) %>%
+    mutate(bangumi = ifelse(grepl("无厘头对谈",vector),"脱力新闻",bangumi)) %>%
     mutate(bangumi = ifelse(is.na(bangumi),"其他",bangumi))  %>%
 
 
