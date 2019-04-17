@@ -1,0 +1,149 @@
+---
+title: "multiple"
+output: html_document
+---
+
+## R Markdown
+
+
+```{r setup, include=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(lubridate)
+pkg_path="~/GIT/lhdata"
+post_path="~/GIT/owaraisite/content/post/"
+
+if (Sys.info()["sysname"]=="Windows"){
+  pkg_path="c:/Users/TC/GIT/lhdata"
+  post_path="c:/Users/TC/GIT/owaraisite/content/post/"
+}
+
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getuploads.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getuploads_fp.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/getbangumi.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/getyearsdf.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_aid2cid.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getbilitags.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_upload_imgur.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/generate_posts2.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/annotate_vlist_tmp.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/fromJSON_fix.R"))
+
+# source(encoding="UTF-8",file=paste0(pkg_path,"/R/annotate_vlist.R"))
+# load(paste0(pkg_path,"/data/mid.rda"))
+
+if (file.exists("/data/manual_filter.rda")){
+  load(paste0(pkg_path,"/data/manual_filter.rda"))
+}else {
+  manual_filter=data.frame(aid=NA)
+}
+```
+
+
+## split
+
+
+
+```{r}
+# 翅膀包工 1464994
+
+vlist.newm <-api_getuploads(16423300,kw = "中字")
+
+vlist.newm$zmz="今天鱼"
+
+p= list.files(post_path)
+oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+
+
+vlist.new <- vlist.newm %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid) %>%
+  filter(!grepl("jaru.*tower", title, ignore.case = TRUE))
+
+vlist.tower = vlist.newm %>%
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid) %>%
+  filter(grepl("jaru.*tower", title, ignore.case = TRUE))
+```
+
+## output others
+
+
+```{r}
+## vlist add more columns using api
+## require vlist.new
+
+
+
+if (nrow(vlist.new) > 0) {
+  message("###########################################################")
+  message("...starting downloading pics\n")
+  #source("../R/annotate_vlist.R")
+  vlist.new.anno <- annotate_vlist(vlist.new)
+  
+  message("###########################################################")
+  message("...starting generating pics")
+  message("###########################################################")
+  
+  generate_post2(vlist.new.anno, post_path)
+  
+}
+```
+
+
+
+
+## output tower
+
+
+
+```{r}
+header=
+"---
+title: JARU JARU TOWER
+author: 今天鱼
+bangumis: 
+  - 笑神推荐
+bangumis:
+  - 合集
+description: 其他&#8226;NA
+nodate: true
+---"
+
+
+
+
+# vlist.tower$title
+```
+
+
+```{r}
+
+class(vlist.tower$created) = "POSIXct"
+
+mytbl =
+  
+vlist.tower %>%
+  select(title,aid,created) %>%
+  mutate(title2=gsub(".*?「(.*)」.*$","\\1", title)) %>%
+  mutate(id = as.numeric(gsub(".*TOWER (\\d+).*$","\\1",title))) %>%
+  mutate(created2 = format(as.POSIXct(created), format ="%Y-%m-%d"),
+         link = paste0("[去B站观看](https://www.bilibili.com/video/av",aid,")")) %>%
+  arrange(desc(created2)) %>%
+  select(id, TITLE = title2, UPDATE = created2, link) %>%
+  knitr::kable(format = "markdown")
+
+# mytbl
+```
+
+
+```{r}
+alltower = c(header, 
+             "\n![flyer](https://i.imgur.com/KyEomco.jpg)\n\n",
+             mytbl)
+
+filepath = "~/GIT/owaraisite/content/matome/2019-04-18-jarutower.md"
+fileConn <- file(filepath)
+writeLines(alltower, fileConn)
+close(fileConn)
+message(paste0(filepath, " finished!"))
+```
+

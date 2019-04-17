@@ -55,7 +55,9 @@ mid.df <- data.frame(mids = c(5382023,
                               764931,
                               2916169,
                               402556474,
-                              576772),
+                              576772,
+                              1464994
+                              ),
                      author = c("九條",
                                 # "莱姆籽",
                                 # "天翼羽魂",
@@ -66,7 +68,8 @@ mid.df <- data.frame(mids = c(5382023,
                                 "sclarkca_",
                                 "Babyhellface",
                                 "6222C字幕组",
-                                "nonkotori"),
+                                "nonkotori",
+                                "翅膀包工队字幕组"),
                      zmz = c("伦敦之心字幕组",
                              # "伦敦之心字幕组",
                              # "伦敦之心字幕组",
@@ -77,7 +80,8 @@ mid.df <- data.frame(mids = c(5382023,
                              "hitori字幕组",
                              "水曜侦探事务所(仮)",
                              "6222C字幕组",
-                             "nonkotori字幕组"
+                             "nonkotori字幕组",
+                             "翅膀包工队字幕组"
                              ),
                      kw = c("",
                             # "伦敦之心字幕组",
@@ -89,7 +93,8 @@ mid.df <- data.frame(mids = c(5382023,
                             "字幕",
                             "中字",
                             "字幕",
-                            "字幕"),
+                            "字幕",
+                            "翅膀包工"),
                      stringsAsFactors = FALSE)
 # save(mid.df,file=paste0(pkg_path,"/data/mid.rda"))
 
@@ -250,6 +255,27 @@ oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
 
 vlist.new <- vlist.newm %>% 
   filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
+
+```
+
+```{r test8, eval=FALSE}
+# 翅膀包工 1464994
+
+vlist.newm <-api_getuploads(1464994,kw = "翅膀包工")
+
+vlist.newm$zmz="翅膀包工队字幕组"
+
+p= list.files(post_path)
+oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+
+
+vlist.new <- vlist.newm %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
+
+```
+
+```{r eval= FALSE}
+vlist.new.anno$bangumi
 
 ```
 
