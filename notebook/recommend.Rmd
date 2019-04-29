@@ -1,0 +1,114 @@
+---
+title: "Untitled"
+author: "TC"
+date: "3/29/2019"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r}
+post_path = "~/GIT/owaraisite/content/matome/2019-03-29-matome.markdown"
+```
+
+
+```{r}
+mycontents = "
+---
+bangumis: 
+  - 笑神推荐
+nocomment: true
+nodate: true
+noedit: true
+index: false
+---
+
+![题图是吉本坂的小寺真理](https://i.imgur.com/Q8ZYuRs.jpg)
+
+
+# 笑神推荐
+
+
+可以推荐你觉得好玩的东西给其他喜爱日综的小伙伴，例如 本部未收录日综节目/ 艺人新闻 /日综资讯
+
+将推荐的内容按格式[回复这个issue](https://github.com/tcgriffith/owaraisite/issues/144)即可
+
+
+## 正文
+
+---
+
+"
+```
+
+```{r eval=FALSE}
+
+# all_comments = jsonlite::read_json("https://api.github.com/repos/tcgriffith/owaraisite/issues/144/comments")
+
+# 
+# get_recomm_df = function(comments.l) {
+#   lapply(comments.l, function(acomment) {
+#     
+#     bodyl = stringr::str_split(acomment$body, pattern = "\n")[[1]]
+#     
+#     recomms = gsub(".*：(.*$)",
+#                    "\\1",
+#                    grep("^推荐语：(.*$)", bodyl, value = TRUE))
+#     author = gsub(".*：(.*$)",
+#                   "\\1",
+#                   grep("^推荐人：(.*$)", bodyl, value = TRUE))
+#     link = gsub(".*：(.*$)",
+#                 "\\1",
+#                 grep("^链接：(.*$)", bodyl, value = TRUE))
+#     
+#     message(recomms)
+#     message(author)
+#     message(link)
+#   })
+# }
+# 
+# 
+# 
+# get_recomm_df(all_comments)
+
+
+```
+
+
+
+```{r results='asis'}
+all_comments = jsonlite::read_json("https://api.github.com/repos/tcgriffith/owaraisite/issues/144/comments")
+bodies = sapply(all_comments, function(df){
+  
+  content = gsub("(推荐[语|人]|链接)","> \\1",df$body)
+  
+  
+  
+  
+  return(paste0(content))
+})
+
+# bodies
+
+recomms = paste(bodies[length(bodies):1],collapse = "\n\n---\n\n")
+
+contents.full = paste0(mycontents, "\n", recomms)
+
+writeLines(contents.full)
+```
+
+
+```{r}
+generate_post3 <- function(contents, filepath) {
+    fileConn <- file(filepath)
+    writeLines(contents, fileConn)
+    close(fileConn)
+    message(paste0(filepath," recommendation updated!"))
+}
+
+generate_post3(contents.full, post_path)
+```
+
