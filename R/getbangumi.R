@@ -11,8 +11,8 @@ getbangumi <- function(vector){
   tmp <- data.frame(vector=vector,stringsAsFactors = FALSE)
   tmp <-
     tmp %>%
-    mutate(bangumi = ifelse(grepl("漫才|短剧|段子",vector),"段子",bangumi)) %>%
-    mutate(bangumi = ifelse(grepl("神舌",vector),"神舌",NA)) %>%
+    mutate(bangumi = ifelse(grepl("漫才|短剧|段子",vector),"段子",NA)) %>%
+    mutate(bangumi = ifelse(grepl("神舌",vector),"神舌",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("女主播的惩罚",vector),"女主播的惩罚",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("月曜夜",vector),"月曜夜未央",bangumi)) %>%
     mutate(bangumi = ifelse(grepl("真的假的",vector),"真的假的TV",bangumi)) %>%
