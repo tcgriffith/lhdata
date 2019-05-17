@@ -79,6 +79,7 @@ annotate_vlist <- function(vlist.new, imgur=TRUE) {
     }
   }
   else {
+    vlist.new.anno$imgur[i] = api_upload_github(vlist.new.anno$pic[i], "~/GIT/owaraisite/static/tmpimg/")
 
   }
 

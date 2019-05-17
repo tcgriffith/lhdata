@@ -1,0 +1,22 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+source("../R/api_upload_imgur.R")
+```
+
+```{r}
+
+testpic ="//raw.githubusercontent.com/tcgriffith/owaraisite/master/static/img/banner-mix_new.jpg"
+
+api_upload_github(testpic, outdir = "~/")
+```
+
