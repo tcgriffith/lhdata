@@ -79,8 +79,9 @@ annotate_vlist <- function(vlist.new, imgur=TRUE) {
     }
   }
   else {
-    vlist.new.anno$imgur[i] = api_upload_github(vlist.new.anno$pic[i], "~/GIT/owaraisite/static/tmpimg/")
-
+    for (i in 1:nrow(vlist.new.anno)){
+      vlist.new.anno$imgur[i] = api_upload_github(vlist.new.anno$pic[i], "~/GIT/owaraisite/static/tmpimg/")
+    }
   }
 
   # vlist.new.anno$zmz="伦敦之心字幕组"

@@ -191,6 +191,8 @@ vlist.new <-api_getuploads(1464994,kw = "字幕")
 
 vlist.new$zmz="个人字幕组"
 
+vlist.new = vlist.new[1,]
+
 ```
 
 
