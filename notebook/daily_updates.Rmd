@@ -41,8 +41,9 @@ if (file.exists("/data/manual_filter.rda")){
 
 
 
-```{r}
-
+```{r eval=FALSE}
+# manually maintaining the file
+# "data/mid.df.json"
 
 
 mid.df <- data.frame(mids = c(5382023,
@@ -98,8 +99,16 @@ mid.df <- data.frame(mids = c(5382023,
                      stringsAsFactors = FALSE)
 # save(mid.df,file=paste0(pkg_path,"/data/mid.rda"))
 
+# writeLines(jsonlite::prettify(jsonlite::toJSON(mid.df)), con = here::here("data/mid.df.json"))
+
+
 ```
 
+```{r}
+# mid.df = jsonlite::fromJSON(here::here("data/author_list.json"))
+ mid.df = jsonlite::fromJSON(paste0(pkg_path,"/data/author_list.json"))
+
+```
 
 
 
@@ -276,6 +285,40 @@ vlist.new <- vlist.newm %>%
 
 ```
 
+```{r test9, eval=FALSE}
+
+
+vlist.newm <-api_getuploads(2092340,kw = "中字")
+
+vlist.newm$zmz="永远的新规"
+
+p= list.files(post_path)
+oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+
+
+vlist.new <- vlist.newm %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
+
+```
+
+
+```{r test10, eval=FALSE}
+
+vlist.newm <-api_getuploads(1878868,kw = "字幕")
+
+vlist.newm$zmz="OWALIAR字幕组"
+
+p= list.files(post_path)
+oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+
+
+vlist.new <- vlist.newm %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
+
+```
+
+
+
 ```{r eval= FALSE}
 vlist.new.anno$bangumi
 
@@ -290,7 +333,7 @@ vlist.new.anno$bangumi
 message("###########################################################")
 message("...starting downloading pics\n")
 #source("../R/annotate_vlist.R")
-vlist.new.anno <-annotate_vlist(vlist.new, imgur = FALSE )
+vlist.new.anno <-annotate_vlist(vlist.new, imgur = FALSE)
 
 ```
 
