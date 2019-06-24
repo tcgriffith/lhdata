@@ -60,11 +60,23 @@ df = data.frame(path = allfiles, stringsAsFactors=FALSE) %>%
          aid = gsub(".*-(.*).md","\\1",name))
 ```
 
+```{r}
+codes = vector(length=nrow(df))
+```
 
 ```{r}
-sapply(df$aid, function(a_aid){
-  api_is_aid_alive(a_aid)
-})
+for (i in 1:length(codes)){
+  codes[i] = api_is_aid_alive(df$aid[i])
+  Sys.sleep(0.1)
+  message(i,"finished")
+}
+```
+
+
+```{r eval=FALSE}
+# codes = pbapply::pbsapply(df$aid, function(a_aid){
+#   api_is_aid_alive(a_aid)
+# })
 ```
 
 
