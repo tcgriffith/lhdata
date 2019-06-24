@@ -1,0 +1,76 @@
+---
+title: "Untitled"
+author: "TC"
+date: "6/24/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+post_path="~/GIT/owaraisite/content/post/"
+
+library(dplyr)
+
+```
+
+## Goal
+
+check if videos are down
+
+
+```{r}
+aid_to_url = function(aid = 56447372){
+  return(paste0("http://api.bilibili.com/x/reply?type=1&oid=",aid))
+}
+
+aid_to_url()
+```
+
+
+```{r}
+api_is_aid_alive = function(aid = 56447372){
+  # url2 =paste0("http://api.bilibili.com/x/reply?type=1&oid=",aid)
+  url3 = paste0("https://api.bilibili.com/x/web-interface/archive/stat?aid=",aid)
+  
+  rslt = jsonlite::fromJSON(url3)$code
+
+  return(rslt)
+}
+```
+
+```{r}
+api_is_aid_alive()
+```
+
+
+
+```{r}
+allfiles = list.files(post_path, full.names=TRUE)
+
+
+
+
+```
+
+```{r}
+df = data.frame(path = allfiles, stringsAsFactors=FALSE) %>%
+  filter(!grepl("index", path)) %>%
+  mutate(name = basename(path),
+         aid = gsub(".*-(.*).md","\\1",name))
+```
+
+
+```{r}
+sapply(df$aid, function(a_aid){
+  api_is_aid_alive(a_aid)
+})
+```
+
+
+
+```{r}
+yaml::read_yaml(allfiles[2])
+```
+
+
