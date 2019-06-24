@@ -102,14 +102,22 @@ mid.df <- data.frame(mids = c(5382023,
 # writeLines(jsonlite::prettify(jsonlite::toJSON(mid.df)), con = here::here("data/mid.df.json"))
 
 
+ # mid.df = jsonlite::fromJSON(paste0(pkg_path,"/data/author_list.json"))
+
 ```
 
 ```{r}
 # mid.df = jsonlite::fromJSON(here::here("data/author_list.json"))
  mid.df = jsonlite::fromJSON(paste0(pkg_path,"/data/author_list.json"))
 
+
 ```
 
+```{r eval=FALSE}
+
+write.csv2(mid.df, paste0(pkg_path,"/data/author_list.csv"))
+
+```
 
 
 ## downloadthings
