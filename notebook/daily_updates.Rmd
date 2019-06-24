@@ -115,7 +115,7 @@ mid.df <- data.frame(mids = c(5382023,
 
 ```{r eval=FALSE}
 
-write.csv2(mid.df, paste0(pkg_path,"/data/author_list.csv"))
+write.csv(mid.df, paste0(pkg_path,"/data/author_list.csv"))
 
 ```
 
