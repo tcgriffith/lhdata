@@ -1,0 +1,61 @@
+---
+title: "Untitled"
+author: "TC"
+date: "6/29/2019"
+output: 
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+## R Markdown
+
+```{r}
+# load("../data/tmp.rda")
+load("../data/post_is_alive.rda")
+
+```
+
+## Summary
+
+### by zmz
+```{r}
+df %>% filter(is.alive == -403) %>%
+  # select(aid, title) %>%
+  filter(is.alive != 0) %>%
+  group_by(zmz) %>%
+  summarise(Number= n()) %>%
+  arrange(desc(Number)) %>%
+  
+  knitr::kable()
+```
+
+### by bangumi
+
+```{r}
+df %>% filter(is.alive == -403) %>%
+  # select(aid, title) %>%
+  filter(is.alive != 0) %>%
+  group_by(bangumi) %>%
+  summarise(Number= n()) %>%
+  # DT::datatable(options = list(lengthMenu = list(c(20, 100,-1), c('20', '100', 'All'))))
+  arrange(desc(Number)) %>%
+  knitr::kable()
+```
+
+
+## Full list
+
+```{r}
+df %>% filter(is.alive == -403) %>%
+  # select(aid, title) %>%
+  filter(is.alive != 0) %>%
+  select(-path,-name) %>%
+  arrange(desc(zmz)) %>%
+  DT::datatable(options = list(lengthMenu = list(c(20, 100,-1), c('20', '100', 'All')))) 
+```
+
