@@ -1,0 +1,212 @@
+---
+title: "Untitled"
+author: "TC"
+date: "8/11/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+bangumi_map = data.table::fread(
+'
+"漫才"  "段子"
+"短剧"  "段子"
+"段子"  "段子"
+"神舌"  "神舌"
+"女主播的惩罚"  "女主播的惩罚"
+"月曜夜"   "月曜夜未央"
+"真的假的"  "真的假的TV"
+"黄金传说"  "黄金传说"
+"ametalk"   "ametalk"
+"男女纠察队" "伦敦之心"
+"London heart"  "伦敦之心"
+"Londonheart"   "伦敦之心"
+"都市传说"  "都市传说"
+"闲聊007" "闲聊007"
+"不准笑"   "24小时不准笑"
+"有吉反省会" "有吉反省会"
+"今夜比一比" "今夜比一比"
+"星期三的" "水曜日的DOWNTOWN"
+"水曜日的" "水曜日的DOWNTOWN"
+"有吉之壁"  "有吉之壁"
+"行列法律"  "行列法律相谈所"
+"IPPON" "IPPON"
+"ENGEI" "ENGEI"
+"红白" "红白模仿歌合战"
+"gaki使" "gaki使"
+"全员逃走中" "全员逃走中"
+"整人大赏"  "整人大赏"
+"洒落主义"  "洒落主义"
+"中居之窗"  "中居之窗"
+"娱乐之神"  "娱乐之神"
+"内村照"   "内村照"
+"海王星.*rola" "海王星rola的爆笑归纳"
+"痛快TV"  "痛快TV"
+"香蕉小木矢黛丽"   "香蕉小木矢黛丽的各种各样的话题"
+"秋刀鱼饭"  "秋刀鱼饭"
+"无厘头对谈"  "脱力新闻"
+"脱力" "脱力新闻"
+', header=FALSE)
+
+bangumi_map$V1 = tolower(bangumi_map$V1)
+```
+
+
+```{r}
+tester1 = data.table::fread(
+"Rahmens 无用途人类
+190702 london hearts 尾行的异常嫉妒心检测2
+190608 神舌
+Numer0nII 190708
+神舌严肃歌曲live 2015
+失落的友人-加贺屋（hitori字幕）
+Gaki使 第四回玩尽世界桌游 后篇 190707
+镰鼬 漫才「UFJ」
+Gaki使 用无人机来拍摄MV吧～！！190714
+JENIBEN 镰鼬cut 20190717
+对谈-JARUJARU×银舍利 @190713 ABCお笑いネタSONIC
+罕见奇人研究所「全校478人中唯一的男生」190713
+宫迫&亮会见回顾+WnS直播评论
+190709 london hearts 村上VS狩野
+星期三的浜酱松酱 190717
+和牛漫才——脱发对策
+Numer0nII 190715
+AMETALK 乐队热潮艺人 080529
+星期三的浜酱松酱 190717
+小淳VS谜之名媛叶姐妹
+AMETALK 超喜欢咖喱艺人 170319
+190705 无厘头对谈
+さんだる 短剧「定食屋」@次世代艺人大奖赛2019
+さんだる 短剧「女友晕倒了」@次世代艺人大奖赛2019
+酱松酱浜的三期星 190724
+国王的早午餐 和牛cut（20190622）
+190716 london hearts
+经典企划-消去女（出川哲朗&剧团一人）
+Numer0nII 190722
+无人岛-fire thunder（hitori字幕）@ABCお笑いグランプリ2018
+", sep="\n", header=FALSE)
+```
+
+
+
+
+```{r}
+library(dplyr)
+
+```
+
+```{r}
+
+getbangumi2 = function(vector, bangumi_map){
+  
+  pattern= paste0(".*(",paste0(tolower(bangumi_map$V1), collapse="|"),").*")
+  
+  tmp = data.frame(vector = vector, stringsAsFactors=FALSE)
+  
+  tmp2 = 
+  tmp %>%
+    mutate(vector = tolower(vector)) %>%
+    mutate(KW = gsub(pattern, "\\1", vector, ignore.case=TRUE)) %>%
+    left_join(bangumi_map, by = c("KW" = "V1")) %>%
+    mutate(V2 = ifelse(is.na(V2),"其他", V2)) %>%
+    rename(bangumi = V2)
+  
+  return(tmp2$bangumi)
+
+}
+```
+
+
+```{r}
+pattern = paste0(".*(", paste0(tolower(bangumi_map$V1), collapse = "|"), ").*")
+
+# tmp = data.frame(vector = vector, stringsAsFactors=FALSE)
+
+tester1.anno =
+  tester1 %>%
+  mutate(V1low = tolower(V1)) %>%
+  mutate(KW = gsub(pattern, "\\1", V1low, ignore.case = TRUE)) %>%
+  left_join(bangumi_map, by = c("KW" = "V1")) %>%
+  rename(bangumi = V2)
+
+
+```
+
+
+```{r}
+ data.frame(V1="london heart", stringsAsFactors=FALSE) %>% 
+  left_join(bangumi_map)
+```
+
+```{r}
+"london heart" %in% tolower(bangumi_map$V1)
+```
+
+
+```{r}
+
+tester1$bangumi = getbangumi2(tester1$V1, bangumi_map)
+
+tester1
+```
+
+```{r}
+tester2= data.table::fread(
+"AMETALK 有趣人才推荐会 20160922
+Taka and Toshi 娱乐之神 看守所 161001
+我家 娱乐之神  - 不幸的电工 20161001
+AMETALK 僵尸艺人  161006
+香蕉小木矢黛丽的各种各样的话题 20161006
+AMETALK 站立talk 20161013
+161014 london hearts 外表选美大赛
+谁都会波澜爆笑 UNJASH 20161016
+AMETALK 厉害了！我的西野 20161020
+161021 london hearts 小淳住一晚
+161028 london hearts 灵活肥妹决定赛+小小淳诞生
+time machine和mr.maric 海王星&rola的爆笑归纳  20161029
+Razer Ramon 海王星&rola的爆笑归纳  川普校长 161029
+奥黛丽 海王星&rola的爆笑归纳 -假如春日拍电影 20161029
+东京03 海王星&rola的爆笑归纳  前辈们的土下座 20161029
+千鸟 海王星&rola的爆笑归纳  20161029
+三明治人 海王星&rola的爆笑归纳  20161029
+洒落主义 枫叶超合金 20161030
+161031 神舌 大喜利之夜
+161104 london hearts 最受小孩子欢迎大赛
+AMETALK 书店读书艺人 20161110
+161111 london hearts 红不起来的艺人父母想法
+AMETALK 想上情热大陆艺人 20161117
+161118 london hearts 女艺人运动会
+AMETALK 用不好iPhone艺人 20161120
+161125 london hearts 男艺人自我排名+女装男子大赛
+AMETALK 假面骑士艺人第二弹 20161127
+161202 过火都市传说 第六弹
+161202 london hearts 小淳住一晚
+161204 london hearts 2小时SP M2大奖赛
+"
+, sep="\n", header=FALSE)
+```
+
+```{r}
+pkg_path = "~/GIT/lhdata"
+ # mid.df = jsonlite::fromJSON(paste0(pkg_path,"/data/author_list.json"))
+bangumi_map = data.table::fread(paste0(pkg_path,"/data/bangumi_list.txt"),header=FALSE)
+
+bangumi_map$V1 = tolower(bangumi_map$V1)
+tester2$bangumi = getbangumi2(tester2$V1, bangumi_map)
+
+tester2
+```
+
+```{r}
+  tester2 %>%
+  mutate(V1low = tolower(V1)) %>%
+  mutate(KW = gsub(pattern, "\\1", V1low, ignore.case = TRUE)) %>%
+  left_join(bangumi_map, by = c("KW" = "V1")) %>%
+  rename(bangumi = V2)
+```
+

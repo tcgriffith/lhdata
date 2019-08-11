@@ -51,3 +51,20 @@ getbangumi <- function(vector){
 
   return(tmp$bangumi)
 }
+
+
+getbangumi2 = function(vector, bangumi_map){
+
+  pattern= paste0(".*(",paste0(tolower(bangumi_map$V1), collapse="|"),").*")
+  tmp = data.frame(vector = vector, stringsAsFactors=FALSE)
+  tmp2 =
+    tmp %>%
+    mutate(vector = tolower(vector)) %>%
+    mutate(KW = gsub(pattern, "\\1", vector, ignore.case=TRUE)) %>%
+    left_join(bangumi_map, by = c("KW" = "V1")) %>%
+    mutate(V2 = ifelse(is.na(V2),"其他", V2)) %>%
+    rename(bangumi = V2)
+
+  return(tmp2$bangumi)
+
+}

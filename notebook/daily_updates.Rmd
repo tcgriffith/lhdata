@@ -108,17 +108,13 @@ mid.df <- data.frame(mids = c(5382023,
 
 ```{r}
 # mid.df = jsonlite::fromJSON(here::here("data/author_list.json"))
- mid.df = jsonlite::fromJSON(paste0(pkg_path,"/data/author_list.json"))
+mid.df = jsonlite::fromJSON(paste0(pkg_path, "/data/author_list.json"))
 
-
+bangumi_map =
+  data.table::fread(paste0(pkg_path, "/data/bangumi_list.txt"), header =
+                      FALSE)
+bangumi_map$V1 = tolower(bangumi_map$V1)
 ```
-
-```{r eval=FALSE}
-
-write.csv(mid.df, paste0(pkg_path,"/data/author_list.csv"))
-
-```
-
 
 ## downloadthings
 
@@ -162,12 +158,6 @@ if (nrow(vlist.new)==0) {
 ```
 
 
-```{r eval=FALSE}
-filter_update <- unique(rbind(manual_filter,data.frame(aid=oldaid)))
-
-manual_filter <- data.frame(aid=oldaid)
-save(manual_filter,file=paste0(pkg_path,"/data/manual_filter.rda"))
-```
 
 ## manually fetching
 

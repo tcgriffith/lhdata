@@ -19,7 +19,7 @@ annotate_vlist <- function(vlist.new, imgur=TRUE) {
 
   vlist.new.anno <- vlist.new.anno %>%
     mutate(up = author) %>%
-    mutate(bangumi = tolower(getbangumi(title))) %>%
+    mutate(bangumi = tolower(getbangumi2(title, bangumi_map))) %>%
     mutate(title_bk = title,
            title = gsub("【.*?】", "", title_bk)) %>%
     mutate(airdate = getyearsdf(title)) %>%
