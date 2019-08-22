@@ -14,7 +14,7 @@ pkg_path="~/GIT/lhdata"
 
 ```{r}
 
-BADTAG_REGEX="广告|广播|日本|熟肉|月耀|londonhearts|amp|集锦|吃饭看|春晚|九条|进度条|纪录片|江头|正版|upup|大集合|搞笑|伦敦之心|nonestyle|-ute|字幕组|-.+[[:space:]].+|综艺|[0-9]{4}|开口跪|[\u3040-\u309f]|[\u30a0-\u30ff]"
+BADTAG_REGEX="广告|广播|日本|熟肉|月耀|londonhearts|amp|集锦|吃饭看|春晚|九条|进度条|纪录片|江头|正版|upup|大集合|搞笑|伦敦之心|nonestyle|-ute|字幕组|-.+[[:space:]].+|综艺|开口跪|[\u3040-\u309f]|[\u30a0-\u30ff]"
 
 tag_cat <- function(fp) {
 
