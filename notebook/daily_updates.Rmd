@@ -162,16 +162,6 @@ if (nrow(vlist.new)==0) {
 ## manually fetching
 
 
-```{r test0, eval=FALSE}
-
-vlist.new = api_getuploads("633450", kw = "鎌鼬字幕")
-
-vlist.new$zmz="鎌鼬字幕"
-
-```
-
-
-
 ```{r test, eval=FALSE}
 vlist.new <-api_getuploads(5858153,kw = "翻唱")
 
