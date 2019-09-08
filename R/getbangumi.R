@@ -1,4 +1,4 @@
-#' Title getbangumi
+#' Title getbangumi deprecated
 #'
 #' @param vector character vector containing some, usually titles, if no keywords detected, return "其他"
 #'

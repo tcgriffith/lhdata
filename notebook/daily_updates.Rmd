@@ -7,8 +7,8 @@ output: html_document
 
 ```{r setup, include=FALSE,message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(dplyr)
-library(lubridate)
+suppressMessages(library(dplyr))
+suppressMessages(library(lubridate))
 pkg_path="~/GIT/lhdata"
 post_path="~/GIT/owaraisite/content/post/"
 
@@ -107,16 +107,6 @@ if (nrow(vlist.new)==0) {
 
 
 ## manually fetching
-
-
-```{r test0, eval=FALSE}
-
-vlist.new = api_getuploads("633450", kw = "鎌鼬字幕")
-
-vlist.new$zmz="鎌鼬字幕"
-
-```
-
 
 
 ```{r test, eval=FALSE}
