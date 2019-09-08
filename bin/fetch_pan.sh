@@ -1,5 +1,6 @@
 
-mdlist=$(grep -l "pan.baidu" *.md)
+grep -l "pan.baidu" *.md > /tmp/_TMPFILE
+
 
 echo '---
 title: 网盘已补
@@ -23,4 +24,6 @@ while read -r md; do
 
     echo "|$title|$zmz|[链接](/post/$slug)|"
 
-done <<< $mdlist
+done < /tmp/_TMPFILE
+
+rm /tmp/_TMPFILE
