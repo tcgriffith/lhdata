@@ -16,6 +16,10 @@ git pull
 
 Rscript ~/GIT/lhdata/R/daily_update.R
 
+cd ~/GIT/owaraisite/content/post/
+bash ~/GIT/lhdata/bin/fetch_pan.sh > ~/GIT/owaraisite/content/lost_found/190908-lostfound-all.md
+cd ~/GIT/owaraisite/
+
 git status
 
 git add .
