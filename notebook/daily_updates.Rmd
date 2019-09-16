@@ -278,7 +278,7 @@ vlist.new.anno$bangumi
 message("###########################################################")
 message("...starting downloading pics\n")
 #source("../R/annotate_vlist.R")
-vlist.new.anno <-annotate_vlist(vlist.new, imgur = FALSE)
+vlist.new.anno <-annotate_vlist(vlist.new, bangumi_map = bangumi_map, imgur = FALSE)
 
 ```
 

@@ -10,7 +10,7 @@
 #'
 
 
-annotate_vlist <- function(vlist.new, imgur=TRUE) {
+annotate_vlist <- function(vlist.new, bangumi_map=bangumi_map, imgur=TRUE) {
   library(dplyr)
   library(lubridate)
 
