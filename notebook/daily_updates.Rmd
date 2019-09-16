@@ -50,19 +50,6 @@ bangumi_map$V1 = tolower(bangumi_map$V1)
 ```
 
 
-```{r eval=FALSE}
-
-vlist.all <- data.frame()
-
-for ( i in 1:nrow(mid.df)){
-  vlist <- api_getuploads_fp(mid.df$mids[i],kw=mid.df$kw[i])
-  vlist$zmz=mid.df$zmz[i]
-  vlist.all <- rbind(vlist.all,vlist)
-}
-
-
-```
-
 ## downloadthings
 
 ```{r}
@@ -292,12 +279,4 @@ message("###########################################################")
 generate_post2(vlist.new.anno,post_path)
 ```
 
-
-
-
-## test
-
-```{r eval=FALSE}
-api_upload_imgur()
-```
 
