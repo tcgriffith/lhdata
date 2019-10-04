@@ -53,7 +53,7 @@ getbangumi <- function(vector){
 }
 
 
-getbangumi2 = function(vector, bangumi_map){
+getbangumi2_bak = function(vector, bangumi_map){
 
   pattern= paste0(".*(",paste0(tolower(bangumi_map$V1), collapse="|"),").*")
   tmp = data.frame(vector = vector, stringsAsFactors=FALSE)
@@ -67,4 +67,32 @@ getbangumi2 = function(vector, bangumi_map){
 
   return(tmp2$bangumi)
 
+}
+
+
+get_zmz= function(vector, mid.df){
+  pattern = paste0("(", paste0(tolower(mid.df$zmz), collapse = "|"), ")")
+
+  test = stringr::str_match_all(vector, pattern)
+  zmz = sapply(test, function(mat) {
+    return(mid.df$zmz[max(match(mat[, 1], mid.df$zmz))])
+  })
+  return(zmz)
+}
+
+
+get_bangumi_img=function(bangumi, bangumi_map2){
+  return(bangumi_map2$V2[match(bangumi, bangumi_map2$V1)])
+}
+
+
+
+getbangumi2 = function(vector, bangumi_map) {
+  pattern = paste0("(", paste0(tolower(bangumi_map$V1), collapse = "|"), ")")
+
+  test = stringr::str_match_all(vector, pattern)
+  bangumis = sapply(test, function(mat) {
+    return(bangumi_map$V2[max(match(mat[, 1], bangumi_map$V1))])
+  })
+  return(bangumis)
 }

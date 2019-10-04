@@ -95,6 +95,21 @@ if (nrow(vlist.new)==0) {
 
 ## manually fetching
 
+```{r test, eval=FALSE}
+vlist.newm <-api_getuploads(mid.df$mids[14],kw = "imoko字幕")
+
+vlist.newm$zmz=mid.df$zmz[14]
+
+p= list.files(post_path)
+oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+
+
+vlist.new <- vlist.newm %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
+
+#vlist.new.anno$zmz="伦敦之心字幕组"
+```
+
 
 ```{r test, eval=FALSE}
 vlist.new <-api_getuploads(5858153,kw = "翻唱")

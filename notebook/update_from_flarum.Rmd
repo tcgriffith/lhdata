@@ -1,0 +1,122 @@
+---
+title: "Untitled"
+author: "TC"
+date: "10/4/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r}
+
+suppressMessages(library(dplyr))
+suppressMessages(library(lubridate))
+pkg_path="~/GIT/lhdata"
+post_path="~/GIT/owaraisite/content/post/"
+
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/generate_posts2.R"))
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/getbangumi.R"))
+
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/getyearsdf.R"))
+
+url="https://d.owaraiclub.com/api/discussions?filter[q]=tag:bd"
+
+```
+
+
+```{r}
+# mid.df = jsonlite::fromJSON(here::here("data/author_list.json"))
+mid.df = jsonlite::fromJSON(paste0(pkg_path, "/data/author_list.json"))
+
+bangumi_map =
+  data.table::fread(paste0(pkg_path, "/data/bangumi_list.txt"), header =
+                      FALSE)
+bangumi_map$V1 = tolower(bangumi_map$V1)
+
+bangumi_img= data.table::fread(paste0(pkg_path, "/data/bangumi_img.txt"),
+header=FALSE)
+```
+
+
+
+
+
+
+```{r}
+
+owarai.json = jsonlite::fromJSON(url)
+
+postid = owarai.json$data$relationships$firstPost$data$id
+content.df = owarai.json$included %>%
+  filter(type == "posts",
+         id %in% postid)
+
+
+df =data.frame(
+  forum_id = owarai.json$data$id,
+  title = owarai.json$data$attributes$title,
+  contentHtml = owarai.json$included$attributes$contentHtml[match(owarai.json$data$relationships$firstPost$data$id, owarai.json$included$id)],
+  date = owarai.json$data$attributes$createdAt,
+  slug = owarai.json$data$attributes$slug,
+  stringsAsFactors=FALSE
+) 
+
+```
+
+```{r}
+
+# get_bangumi_img(df.anno$bangumi, bangumi_map2)
+```
+
+
+
+
+```{r}
+
+
+
+df.anno = df %>%
+  # mutate(title = title) %>%
+  mutate(title_bk = title,
+       title = gsub("【.*?】", "", title_bk)) %>%
+  mutate(
+    author = get_zmz(title_bk, mid.df),
+    zmz = author,
+    publishdate = getyearsdf(title),
+    airdate = publishdate,
+    date = getyearsdf(date),
+    bangumi = getbangumi2(title, bangumi_map),
+    slug  = paste0(
+      format(date, "%Y-%m-%d"),
+      "-",
+      format(airdate, "%y%m%d"),
+      "-",
+      "discuss"
+    ) ,
+    description = paste0(bangumi, "&#8226;", format(airdate, "%y%m%d")),
+    weight = 200000 - as.numeric(format(date, "%y%m%d")),
+    categories = zmz,
+    tags = "" ,
+    bangumis = bangumi,
+    desc = "",
+    brief = title,
+    img = get_bangumi_img(bangumi, bangumi_map2)
+  )
+
+
+# df.anno
+```
+
+
+
+
+
+```{r}
+generate_post3(df.anno, post_path)
+```
+
