@@ -68,6 +68,9 @@ df =data.frame(
 
 ```
 
+
+
+
 ```{r}
 
 # get_bangumi_img(df.anno$bangumi, bangumi_map2)
@@ -96,7 +99,8 @@ df.anno = df %>%
       "-",
       format(airdate, "%y%m%d"),
       "-",
-      "discuss"
+      "d",
+      forum_id
     ) ,
     description = paste0(bangumi, "&#8226;", format(airdate, "%y%m%d")),
     weight = 200000 - as.numeric(format(date, "%y%m%d")),
@@ -105,7 +109,7 @@ df.anno = df %>%
     bangumis = bangumi,
     desc = "",
     brief = title,
-    img = get_bangumi_img(bangumi, bangumi_map2)
+    img = get_bangumi_img(bangumi, bangumi_img)
   )
 
 
@@ -113,6 +117,21 @@ df.anno = df %>%
 ```
 
 
+```{r}
+p= list.files(post_path)
+
+vslugs = gsub(".md","",p)
+
+df.anno.f <- df.anno %>% 
+  filter(!slug %in% vslugs)
+
+if (nrow(df.anno.f)==0) {
+  message("...no new post on flarum detected, quitting")
+  q('no')
+} else{
+  writeLines(df.anno.f$title)
+}
+```
 
 
 

@@ -14,11 +14,12 @@ module load R/3.4.0
 cd ~/GIT/owaraisite/
 git pull
 
-Rscript ~/GIT/lhdata/R/daily_update.R
+# Rscript ~/GIT/lhdata/R/daily_update.R ~/GIT/lhdata/notebook/update_jarutower.Rmd
 
-cd ~/GIT/owaraisite/content/post/
-bash ~/GIT/lhdata/bin/fetch_pan.sh > ~/GIT/owaraisite/content/lost_found/190908-lostfound-all.md
-cd ~/GIT/owaraisite/
+~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/update_jarutower.Rmd
+~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/daily_updates.Rmd
+~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/update_from_flarum.Rmd
+~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/update_tags.Rmd
 
 git status
 

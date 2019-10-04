@@ -83,7 +83,7 @@ message("###########################################################")
 
 message(paste0("...scraping finished, ",nrow(vlist.new)," new posts"))
 if (nrow(vlist.new)==0) {
-  message("...no new post detected, quitting script")
+  message("...no new post detected, quitting")
   q('no')
 } else{
   writeLines(vlist.new$title)
@@ -95,7 +95,7 @@ if (nrow(vlist.new)==0) {
 
 ## manually fetching
 
-```{r test, eval=FALSE}
+```{r test1, eval=FALSE}
 vlist.newm <-api_getuploads(mid.df$mids[14],kw = "imoko字幕")
 
 vlist.newm$zmz=mid.df$zmz[14]
@@ -111,7 +111,7 @@ vlist.new <- vlist.newm %>%
 ```
 
 
-```{r test, eval=FALSE}
+```{r test0, eval=FALSE}
 vlist.new <-api_getuploads(5858153,kw = "翻唱")
 
 vlist.new$zmz="伦敦之心字幕组"

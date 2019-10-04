@@ -104,7 +104,8 @@ generate_post3 <- function(dfa, foldpath) {
         desc,
         contentHtml,
         brief,
-        img
+        img,
+        forum_id   ## new in generate_post3
       )
 
     filepath = paste0(
@@ -131,7 +132,8 @@ generate_post3 <- function(dfa, foldpath) {
             slug,
             description,
             weight,
-            brief
+            brief,
+            forum_id
           )
       )
 
