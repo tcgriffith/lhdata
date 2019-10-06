@@ -1,0 +1,37 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+
+pkg_path="~/GIT/lhdata"
+bangumi_map =
+  data.table::fread(paste0(pkg_path, "/data/bangumi_list.txt"), header =
+                      FALSE)
+
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/getbangumi.R"))
+```
+
+```{r}
+
+  pattern = paste0("(", paste0(tolower(bangumi_map$V1), collapse = "|"), ")")
+vector= "猩猩日语课堂 180328国庆第五"
+
+  test = stringr::str_match_all(vector, pattern)
+  
+  if(nrow(test[[1]]) ==0){
+    bangumis = "其他"
+  }else{
+  bangumis = sapply(test, function(mat) {
+    return(bangumi_map$V2[max(match(mat[, 1], bangumi_map$V1))])
+  })
+  }
+  
+```
+
