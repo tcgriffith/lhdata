@@ -91,12 +91,13 @@ getbangumi2 = function(vector, bangumi_map) {
   pattern = paste0("(", paste0(tolower(bangumi_map$V1), collapse = "|"), ")")
 
   test = stringr::str_match_all(vector, pattern)
-  if(nrow(test[[1]]) ==0){
-    bangumis = "其他"
-  }else{
-    bangumis = sapply(test, function(mat) {
+
+
+  bangumis = sapply(test, function(mat){
+    if (length(mat) == 0) return("其他")
+    else{
       return(bangumi_map$V2[max(match(mat[, 1], bangumi_map$V1))])
-    })
-  }
+    }
+  })
   return(bangumis)
 }
