@@ -5,7 +5,7 @@ Comandante Comandante
 FruitPunch FruitPunch
 Hanako Hanako,花子
 Hi-Hi Hi-Hi
-JaruJaru JaruJaru,jaru
+JaruJaru JaruJaru,jaru,加鲁加鲁
 LICENCE LICENCE,LICENSE
 Lotti Lotti
 Lucifer吉冈 Lucifer吉冈
@@ -58,7 +58,7 @@ WomanRushHour WomanRushHour,村本
 巧克力星球 巧克力星球
 帕帕 帕帕
 我家 我家
-时光机三号 时光机三号
+时光机三号 时光机三号,"time machine"
 東京03 東京03
 松本俱乐部 松本俱乐部
 桂歌丸 桂歌丸

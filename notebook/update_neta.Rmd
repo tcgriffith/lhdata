@@ -5,43 +5,18 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
+postpath="~/GIT/owaraisite/content/post/"
 
-## R Markdown
-
-```{r}
-knitr::opts_chunk$set(echo = TRUE)
-suppressMessages(library(dplyr))
-suppressMessages(library(lubridate))
-pkg_path="~/GIT/lhdata"
-post_path="~/GIT/owaraisite/content/post/"
-
-if (Sys.info()["sysname"]=="Windows"){
-  pkg_path="c:/Users/TC/GIT/lhdata"
-  post_path="c:/Users/TC/GIT/owaraisite/content/post/"
-}
-
-source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getuploads.R"))
-source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getuploads_fp.R"))
-source(encoding="UTF-8",file=paste0(pkg_path,"/R/getbangumi.R"))
-source(encoding="UTF-8",file=paste0(pkg_path,"/R/getyearsdf.R"))
-source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_aid2cid.R"))
-source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getbilitags.R"))
-source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_upload_imgur.R"))
-source(encoding="UTF-8",file=paste0(pkg_path,"/R/generate_posts2.R"))
-source(encoding="UTF-8",file=paste0(pkg_path,"/R/annotate_vlist_tmp.R"))
-source(encoding="UTF-8",file=paste0(pkg_path,"/R/fromJSON_fix.R"))
-
-if (file.exists("/data/manual_filter.rda")){
-  load(paste0(pkg_path,"/data/manual_filter.rda"))
-}else {
-  manual_filter=data.frame(aid=NA)
-}
-```
-
-```{r}
 netapath="~/GIT/owaraisite/content/neta/"
+pkg_path="~/GIT/lhdata"
+
+source(encoding="UTF-8",file=paste0(pkg_path,"/R/getbangumi.R"))
+library(tidyr)
+library(dplyr)
+
+
 ```
+
 
 ```{r}
 
@@ -55,24 +30,9 @@ geinin_map %>%
   mutate(a=tolower(V2),
          b=V1)  %>%
   select(V1=a, V2=b)
-```
 
 
-```{r}
 f = list.files(netapath, full.names = TRUE)
-```
-
-
-```{r eval=FALSE}
-
-v="title: SPEED WAGON 漫才 - 甜言蜜语"
-
-      v =gsub(" +","", v)
-      v= tolower(v)
-
-      v
-getbangumi2(v, geinin_map.s)
-
 ```
 
 
@@ -81,26 +41,60 @@ getbangumi2(v, geinin_map.s)
 
 processit = function(fpost, geinin_map.s) {
   line = xfun::file_string(fpost)
+  is.processed = 0
+  
   if (grepl("bangumi.* 段子", line)) {
+    v = gsub(".*(title.*?\n).*", "\\1", line)
+    v = gsub(" +", "", v)
+    v = tolower(v)
+    
+    
+    bgm = getbangumi2(v, geinin_map.s)
+    # print(bgm)
     if (!grepl("combi:", line)) {
-      v = grep("title.*?\n", line, value = TRUE)
-
-      v =gsub(" +","", v)
-      v= tolower(v)
-      bgm = getbangumi2(v, geinin_map.s)
-      print(bgm)
-      insert = paste0("combi: ", bgm,"\n")
-      newline = gsub("title:",paste0(insert,"title:"), line)
+      insert = paste0("combi: ", bgm, "\n")
+      newline = gsub("title:", paste0(insert, "title:"), line)
       xfun::write_utf8(newline, fpost)
-      message(fpost, "is neta, processed")
+      message(fpost, "is neta, processed, added: ", bgm)
+      is.processed = 1
     }
+    if (grepl("combi: 其他", line) && bgm != "其他"){
+      newline = gsub("combi: .*?\n",
+               paste0("combi: ", bgm, "\n"),
+               line)
+      xfun::write_utf8(newline, fpost)
+      message(fpost, "is neta, processed, added: ", bgm)
+      is.processed = 1     
+    }
+    
   }
+  
+  return(is.processed)
 }
 
 # processit(testpost, geinin_map.s)
 
 
 
-dummy = lapply(f, processit, geinin_map.s)
+
+```
+
+```{r}
+dummy = sapply(f, processit, geinin_map.s)
+
+table(is.processed)
+```
+
+```{r test, eval=FALSE}
+
+fpost="~/GIT/owaraisite/content/post/2017-10-16-140925-1802380.md"
+
+  line = xfun::file_string(fpost)
+      v = gsub(".*(title.*?\n).*","\\1",line)
+      v = gsub(" +", "", v)
+      v = tolower(v)
+      bgm = getbangumi2(v, geinin_map.s)
+      bgm
+      v
 ```
 

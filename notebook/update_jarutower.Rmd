@@ -14,6 +14,8 @@ suppressMessages(library(lubridate))
 pkg_path="~/GIT/lhdata"
 post_path="~/GIT/owaraisite/content/post/"
 
+neta_path="~/GIT/owaraisite/content/neta/"
+
 if (Sys.info()["sysname"]=="Windows"){
   pkg_path="c:/Users/TC/GIT/lhdata"
   post_path="c:/Users/TC/GIT/owaraisite/content/post/"
@@ -61,8 +63,9 @@ vlist.newm <-api_getuploads(16423300,kw = "中字")
 vlist.newm$zmz="今天鱼"
 
 p= list.files(post_path)
-oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
-
+pneta = list.files(neta_path)
+oldaid <- c(gsub('^.*-(.*).md$','\\1',p),
+            gsub('^.*-(.*).md$','\\1',pneta))
 
 vlist.new <- vlist.newm %>% 
   filter(!aid %in% oldaid, !aid %in% manual_filter$aid) %>%

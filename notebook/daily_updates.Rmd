@@ -12,6 +12,8 @@ suppressMessages(library(lubridate))
 pkg_path="~/GIT/lhdata"
 post_path="~/GIT/owaraisite/content/post/"
 
+neta_path="~/GIT/owaraisite/content/neta/"
+
 if (Sys.info()["sysname"]=="Windows"){
   pkg_path="c:/Users/TC/GIT/lhdata"
   post_path="c:/Users/TC/GIT/owaraisite/content/post/"
@@ -71,7 +73,9 @@ for ( i in 1:nrow(mid.df)){
 
 ## get new vlist
 p= list.files(post_path)
-oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+pneta = list.files(neta_path)
+oldaid <- c(gsub('^.*-(.*).md$','\\1',p),
+            gsub('^.*-(.*).md$','\\1',pneta))
 
 
 vlist.new <- vlist.all %>% 
