@@ -21,6 +21,8 @@ git pull
 ~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/update_from_flarum.Rmd
 ~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/update_tags.Rmd
 
+~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/update_bangumi.Rmd
+
 # update meta
 grep -l "bangumi.*段子" ~/GIT/owaraisite/content/post/*.md |xargs mv -t ~/GIT/owaraisite/content/neta/
 ~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/update_neta.Rmd
