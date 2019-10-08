@@ -58,12 +58,13 @@ processit = function(fpost, geinin_map.s) {
       message(fpost, "is neta, processed, added: ", bgm)
       is.processed = 1
     }
-    if (grepl("combi: 其他", line) && bgm != "其他"){
+    if ( bgm != "其他"){
+      
       newline = gsub("combi: .*?\n",
                paste0("combi: ", bgm, "\n"),
                line)
       xfun::write_utf8(newline, fpost)
-      message(fpost, "is neta, processed, added: ", bgm)
+      message(fpost, "is neta, processed, added: ", bgm, v)
       is.processed = 1     
     }
     
@@ -82,12 +83,12 @@ processit = function(fpost, geinin_map.s) {
 ```{r}
 dummy = sapply(f, processit, geinin_map.s)
 
-table(is.processed)
+table(dummy)
 ```
 
 ```{r test, eval=FALSE}
 
-fpost="~/GIT/owaraisite/content/post/2017-10-16-140925-1802380.md"
+fpost="~/GIT/owaraisite/content/neta/2017-10-16-160401-4640978.md"
 
   line = xfun::file_string(fpost)
       v = gsub(".*(title.*?\n).*","\\1",line)

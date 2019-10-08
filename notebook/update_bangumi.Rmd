@@ -26,153 +26,66 @@ bangumi_map =
   data.table::fread(paste0(pkg_path, "/data/bangumi_list.txt"), header = FALSE)
 bangumi_map$V1 = tolower(bangumi_map$V1)
 
-geinin_map =
-  data.table::fread(fill =TRUE, sep2=" ",paste0(pkg_path, "/data/geinin_list.txt"), header =
-                      FALSE)
 
-geinin_map.s =
-geinin_map %>%
-  tidyr::separate_rows(V2, sep=",") %>%
-  mutate(a=tolower(V2),
-         b=V1)  %>%
-  select(V1=a, V2=b)
+# f = c(list.files(postpath, full.names = TRUE))
 
 
 f = c(
-  list.files(postpath, full.names = TRUE),
-  list.files(netapath,full.names=TRUE))
+  list.files(postpath, full.names = TRUE))
+  # list.files(netapath,full.names=TRUE))
 
 ```
 
-```{r}
-## return a list of identified keywords
-## map v1->v2
-guess_keywords = function(vector, map) {
-  
-  pattern = paste0("(", paste0(tolower(map$V1), collapse = "|"), ")")
-  test = stringr::str_match_all(vector, pattern)
-  
-  rslt = lapply(test, function(mat){
-    unique(as.vector(mat[,1]))
-  })
-  return(rslt)
-}
-```
 
-```{r}
-testdata = readLines("~/test.titles")
-
-testrslt = guess_keywords(testdata, geinin_map)
-```
 
 
 
 ```{r}
-update_combi=function(header.yaml, geinin_map){
-  
-  header.yaml.new = header.yaml
-
-  if("bangumi" %in% names(header.yaml)){
-    v = header.yaml$title
-    
-    guess_combi = getbangumi2(title, combine)
-    
-    if (is.null(header.yaml$combi))
-    
-  }
-  
-  return(header.yaml.new)
-}
-
-update_bangumi=function(header.yaml, bangumi_map){
-  return(header.yaml)
-}
-
-update_tags=function(header.yaml, geinin_map){
-  return(header.yaml)
-}
-
-update_meta= function(header.yaml, geinin_map, bangumi_map){
-  header.new = 
-  header.yaml %>%
-    update_combi(., geinin_map) %>%
-    update_bangumi(., bangumi_map) %>%
-    update_tags(., geinin_map)
-  
-  return(header.new)
-}
-```
-
-
-```{r eval=FALSE}
-
-  fpost = f[5]
-
+update_bangumi = function(fpost, bangumi_map) {
   lines = xfun::file_string(fpost)
-  content = gsub("^---.*?---\n","", lines)
-  header = gsub("^---(.*?)\n---\n.*", "\\1", lines)
-  
-  header.yaml = yaml::yaml.load(header)
-  
-  header.yaml.new = update_meta(header.yaml)
-  
-  
-
-```
-
-
-
-```{r}
-update_meta = function(fpost, bangumi_map){
-  lines = xfun::file_string(fpost)
-  content = gsub("^---.*?---\n","", lines)
+  content = gsub("^---.*?---\n", "", lines)
   header = gsub("^---(.*?)\n---\n.*", "\\1", lines)
   is.processed = 0
-
-  if (grepl("bangumi: 其他", header)){
+  
+  if (grepl("bangumi:", header)) {
     header.yml = yaml::yaml.load(header)
-    v = header.yml$title
+    v = paste0(header.yml$title)
     v = gsub(" +", "", v)
     v = tolower(v)
-
+    
     bgm = getbangumi2(v, bangumi_map)
-
-    oldbgm= header.yml$bangumi
-
-    if (length(oldbgm) ==0) {
-      stop(fpost)
-    }
-
+    
+    oldbgm = header.yml$bangumi
+    
     # message(oldbgm, " ", bgm)
-
-    if( oldbgm != bgm){
+    if (is.null(oldbgm)|| is.na(oldbgm)) oldbgm = ""
+    
+    if (bgm != "其他" && oldbgm != bgm ) {
       header.yml$bangumi = bgm
-      header.yml$bangumis = c(bgm,"") # create a list
-      header.yml$tags = c(header.yml$tags,"") # create a list
-
-      full.post=paste0(
+      header.yml$bangumis = c(bgm, "") # create a list
+      header.yml$tags = c(header.yml$tags, "") # create a list
+      
+      full.post = paste0(
         "---\n",
-        yaml::as.yaml(header.yml, indent.mapping.sequence=TRUE),
+        yaml::as.yaml(header.yml, indent.mapping.sequence = TRUE),
         "---\n",
         content
       )
-
+      
       xfun::write_utf8(full.post, fpost)
       message("... ",
-        basename(fpost),
-        " has new bangumi info, updated: ",oldbgm,"->",
-        bgm)
+              basename(fpost),
+              " has new bangumi info, updated: ",
+              oldbgm,
+              "->",
+              bgm)
       is.processed = 1
     }
-
   }
-  
   return(is.processed)
 }
 
-update_combi = function(fpost, geinin_map){
-  
-}
+
 ```
 
 
@@ -186,12 +99,6 @@ dummy = sapply(f, update_bangumi, bangumi_map)
 table(dummy)
 
 ```
-gi
 
 
-
-
-```{r}
-update_bangumi(f[25], bangumi_map)
-```
 

@@ -7,7 +7,7 @@ Hanako Hanako,花子
 Hi-Hi Hi-Hi
 JaruJaru JaruJaru,jaru,加鲁加鲁
 LICENCE LICENCE,LICENSE
-Lotti Lotti
+Lotti Lotti,洛奇
 Lucifer吉冈 Lucifer吉冈
 Member Member
 Miki Miki
@@ -35,7 +35,7 @@ WomanRushHour WomanRushHour,村本
 三四郎 三四郎
 三明治人 三明治人
 丛林口袋 丛林口袋
-东京03 东京03
+东京03 东京03,東京03
 东京hoteison 东京hoteison
 中川家 中川家
 中村凉子 中村凉子
@@ -59,11 +59,9 @@ WomanRushHour WomanRushHour,村本
 帕帕 帕帕
 我家 我家
 时光机三号 时光机三号,"time machine"
-東京03 東京03
 松本俱乐部 松本俱乐部
 桂歌丸 桂歌丸
 次长课长 次长课长
-洛奇 洛奇
 流星 流星
 浜神 浜神
 海鸥精神 海鸥精神
