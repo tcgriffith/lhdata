@@ -9,6 +9,7 @@ git pull
 
 # Rscript ~/GIT/lhdata/R/daily_update.R
 
+~/GIT/lhdata/bin/update_wiki.sh
 
 ~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/update_jarutower.Rmd
 ~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/daily_updates.Rmd

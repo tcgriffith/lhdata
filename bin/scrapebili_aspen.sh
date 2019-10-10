@@ -14,6 +14,8 @@ module load R/3.4.0
 cd ~/GIT/owaraisite/
 git pull
 
+~/GIT/lhdata/bin/update_wiki.sh
+
 # Rscript ~/GIT/lhdata/R/daily_update.R ~/GIT/lhdata/notebook/update_jarutower.Rmd
 
 ~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/update_jarutower.Rmd
