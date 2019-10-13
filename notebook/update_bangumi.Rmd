@@ -32,7 +32,6 @@ bangumi_map$V1 = tolower(bangumi_map$V1)
 
 f = c(
   list.files(postpath, full.names = TRUE))
-  # list.files(netapath,full.names=TRUE))
 
 ```
 
@@ -99,6 +98,3 @@ dummy = sapply(f, update_bangumi, bangumi_map)
 table(dummy)
 
 ```
-
-
-
