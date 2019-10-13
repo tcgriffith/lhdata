@@ -62,7 +62,8 @@ update_bangumi = function(fpost, bangumi_map) {
     if (bgm != "其他" && oldbgm != bgm ) {
       header.yml$bangumi = bgm
       header.yml$bangumis = c(bgm, "") # create a list
-      header.yml$tags = c(header.yml$tags, "") # create a list
+      header.yml$tags = c(unique(header.yml$tags), "") # create a list
+      header.yml$categories = c(unique(header.yml$categories))
       
       full.post = paste0(
         "---\n",
