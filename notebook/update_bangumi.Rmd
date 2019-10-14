@@ -26,10 +26,6 @@ bangumi_map =
   data.table::fread(paste0(pkg_path, "/data/bangumi_list.txt"), header = FALSE)
 bangumi_map$V1 = tolower(bangumi_map$V1)
 
-
-# f = c(list.files(postpath, full.names = TRUE))
-
-
 f = c(
   list.files(postpath, full.names = TRUE))
 
