@@ -88,11 +88,14 @@ get_bangumi_img=function(bangumi, bangumi_map2){
 
 
 getbangumi2 = function(vector, bangumi_map) {
+
+
+
+  vector = gsub(" +", "", vector)
+  vector = tolower(vector)
+
   pattern = paste0("(", paste0(tolower(bangumi_map$V1), collapse = "|"), ")")
-
   test = stringr::str_match_all(vector, pattern)
-
-
   bangumis = sapply(test, function(mat){
     if (length(mat) == 0) return("其他")
     else{

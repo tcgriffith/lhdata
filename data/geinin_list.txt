@@ -29,7 +29,7 @@ TOTO TOTO,totto
 TUTORIAL TUTORIAL,德井义实,jaru
 Universe Universe
 UNJASH UNJASH
-VIKING VIKING
+VIKING VIKING,バイキング
 Westland Westland
 WomanRushHour WomanRushHour,村本
 三四郎 三四郎
@@ -58,7 +58,7 @@ WomanRushHour WomanRushHour,村本
 巧克力星球 巧克力星球
 帕帕 帕帕
 我家 我家
-时光机三号 时光机三号,"time machine"
+时光机三号 时光机三号,"timemachine"
 松本俱乐部 松本俱乐部
 桂歌丸 桂歌丸
 次长课长 次长课长
