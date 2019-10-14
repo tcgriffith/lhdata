@@ -8,8 +8,11 @@
 # webscraping bilibili to generate new posts for owaraisite
 # logs:  ~/logs/
 
-module load R/3.4.0
+# for newer git
+source activate py3env
 
+# for r
+module load R/3.4.0
 
 . ~/GIT/lhdata/bin/scrapebili.sh
 
