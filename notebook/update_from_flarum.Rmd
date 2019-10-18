@@ -51,6 +51,9 @@ header=FALSE)
 
 owarai.json = jsonlite::fromJSON(url)
 
+
+if(length(d))
+
 postid = owarai.json$data$relationships$firstPost$data$id
 content.df = owarai.json$included %>%
   filter(type == "posts",

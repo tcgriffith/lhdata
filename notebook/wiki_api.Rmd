@@ -1,0 +1,80 @@
+---
+title: "Untitled"
+author: "TC"
+date: "10/18/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+retrieve_allpg = function(url){
+  fetch_it = TRUE
+
+  param_continue=""
+  all_rc=list()
+  while(fetch_it){
+    newurl = paste0(url,param_continue)
+    testit = jsonlite::fromJSON(newurl)
+    all_rc = append(all_rc, testit$query)
+    
+    if (!is.null(testit$continue)){
+      param_continue = paste0("&cmcontinue=", testit$continue$cmcontinue)
+    } else{
+      fetch_it = FALSE
+    }
+  }
+
+  return(do.call(rbind, all_rc))
+}
+```
+
+
+```{r}
+
+url = "https://ja.wikipedia.org/w/api.php?action=query&list=categorymembers&cmtitle=Category:%E6%97%A5%E6%9C%AC%E3%81%AE%E3%81%8A%E7%AC%91%E3%81%84%E3%82%B3%E3%83%B3%E3%83%93&cmlimit=500&format=json&prop=info&inprop=url"
+
+data_combi = retrieve_allpg(url) 
+```
+
+```{r}
+url_geinin = "https://ja.wikipedia.org/w/api.php?action=query&list=categorymembers&cmtitle=Category:%E3%81%8A%E7%AC%91%E3%81%84%E8%8A%B8%E4%BA%BA&cmlimit=500&format=json"
+
+data_geinin = retrieve_allpg(url_geinin) 
+```
+
+## clean
+
+```{r}
+library(dplyr)
+```
+
+
+```{r}
+data_geinin.cln = 
+  data_geinin %>%
+  filter(ns == 0) %>%
+  mutate(short_title = stringr::str_trim(gsub("\\(.*?\\)","",title)))
+```
+
+```{r}
+data_combi.cln =
+  data_combi %>%
+  filter(ns == 0) %>%
+  mutate(short_title = stringr::str_trim(gsub("\\(.*?\\)", "", title)))
+```
+
+
+```{r}
+
+kw = unique(c(data_combi.cln$short_title, data_geinin.cln$short_title))
+
+
+writeLines(kw, con="../data/kw_wiki.txt")
+```
+
+

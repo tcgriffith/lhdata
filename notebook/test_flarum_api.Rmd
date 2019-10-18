@@ -1,0 +1,56 @@
+---
+title: "Untitled"
+author: "TC"
+date: "10/17/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+library(httr)
+```
+
+```{r}
+
+jsonstr = '
+{
+  data: {
+    attributes: {
+      username: "owaraiadmin",
+      password: "ztc5325325"
+    }
+  }
+}
+'
+
+POST(
+  "https://d.owaraiclub.com/api/token",
+  add_headers("HTTP/1.1"),
+  body = jsonstr
+)
+```
+
+
+```{r}
+
+library(httr)
+
+test =
+  GET(
+  "https://d.owaraiclub.com/api/discussions?filter[q]=tag:bd",
+  add_headers(Authorization='Token YQobAWLhrHn0wGS6BrwW639Hx9sLzIoYF5KjUt6q; userId=1')
+)
+
+content(test, "text")
+
+```
+
+```{r}
+
+```
+
