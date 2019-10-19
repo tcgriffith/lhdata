@@ -108,17 +108,25 @@ if (nrow(vlist.new) > 0) {
 
 
 ```{r}
+today = Sys.Date()
+weight = 200000 - as.numeric(format(today,"%y%m%d"))
+
+mytitle = vlist.tower %>% arrange(desc(created)) %>% pull(title)
+
+
+
 header=paste0(
 "---
-title: JARU JARU TOWER
+combi: 加鲁加鲁
+title: ",mytitle[1],"
 author: 今天鱼
+bangumi: 段子
 bangumis: 
-  - 笑神推荐
-description: 其他&#8226;NA
-weight: 1.0
-date: ",Sys.Date(),"
+  - 段子
+description: 段子&#8226;NA
+weight: ",weight,"
 nodate: true
-desc: \"JARUJARU自称拥有8000个段子，现在以「JARU JARU TOWER」的形式在公式HP和油管每天更新一个。更新一次即是加建一层，居民则是短剧角色：由JARUJARU扮演的奇怪的人。距离「JARU JARU TOWER」建成8000层的2039年11月7日还有二十年。\"
+brief: \"JARUJARU自称拥有8000个段子，现在以「JARU JARU TOWER」的形式在公式HP和油管每天更新一个。更新一次即是加建一层，居民则是短剧角色：由JARUJARU扮演的奇怪的人。距离「JARU JARU TOWER」建成8000层的2039年11月7日还有二十年。\"
 ---
 "
 )
@@ -159,7 +167,7 @@ alltower = c(header,
              "",
              mytbl)
 
-filepath = "~/GIT/owaraisite/content/post/2019-04-18-jarutower.md"
+filepath = "~/GIT/owaraisite/content/neta/jarutower.md"
 fileConn <- file(filepath)
 writeLines(alltower, fileConn)
 close(fileConn)
