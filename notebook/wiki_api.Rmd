@@ -58,18 +58,38 @@ library(dplyr)
 data_geinin.cln = 
   data_geinin %>%
   filter(ns == 0) %>%
-  mutate(short_title = stringr::str_trim(gsub("\\(.*?\\)","",title)))
+  mutate(short_title = stringr::str_trim(gsub("\\(.*?\\)","",title)),
+         link=paste0("[wikilink](https://ja.wikipedia.org/?curid=",pageid,")"))
 ```
 
 ```{r}
 data_combi.cln =
   data_combi %>%
   filter(ns == 0) %>%
-  mutate(short_title = stringr::str_trim(gsub("\\(.*?\\)", "", title)))
+  mutate(short_title = stringr::str_trim(gsub("\\(.*?\\)", "", title)),
+                  link=paste0("[wikilink](https://ja.wikipedia.org/?curid=",pageid,")"))
+```
+
+
+
+
+```{r}
+geinin_tbl = data_geinin.cln %>%
+  select(title = short_title, link) %>%
+  knitr::kable(format="markdown")
+```
+
+```{r}
+combi_tbl = data_combi.cln %>%
+  select(title = short_title, link) %>%
+  knitr::kable(format="markdown")
 ```
 
 
 ```{r}
+writeLines(geinin_tbl, "~/GIT/lhdata/data/wiki_geinin.md")
+
+writeLines(combi_tbl, "~/GIT/lhdata/data/wiki_combi.md")
 
 kw = unique(c(data_combi.cln$short_title, data_geinin.cln$short_title))
 

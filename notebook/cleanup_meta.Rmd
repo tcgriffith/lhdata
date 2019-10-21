@@ -262,6 +262,22 @@ FUJIWARA藤本
 
 
 ```{r}
+kw_wiki = data.table::fread("~/GIT/lhdata/data/kw_wiki.txt", header=FALSE)
+```
+
+```{r}
+kw_wiki.cln =
+  
+  kw_wiki %>%
+  mutate(strlen = stringr::str_length(V1)) %>%
+  arrange(strlen) %>%
+  filter(!V1 %in% c("ORIE","JP","orie","jp", "やす")) %>%
+  filter(strlen >1)
+```
+
+
+
+```{r}
 dummy = pbapply::pbsapply(f, update_tags, kw_wiki.cln$V1)
 
 table(dummy)
