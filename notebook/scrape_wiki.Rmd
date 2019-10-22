@@ -1,0 +1,153 @@
+---
+title: "Untitled"
+author: "TC"
+date: "10/22/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(htmltab)
+library(dplyr)
+```
+
+## R Markdown
+
+
+```{r}
+# library(rvest)
+
+```
+
+```{r}
+url = "https://ja.wikipedia.org/wiki/%E3%82%B4%E3%83%83%E3%83%89%E3%82%BF%E3%83%B3#%E6%94%BE%E9%80%81%E3%83%AA%E3%82%B9%E3%83%88"
+
+```
+
+```{r}
+### https://stackoverflow.com/questions/47585699/rvest-html-table-error-error-in-outj-k-subscript-out-of-bounds
+
+## htmltab handles tables better
+
+
+tmp_get_wikitable = function(i) {
+  tbl =
+    url %>%
+  htmltab(i)
+  
+  
+  tbl$year = gsub("(.*) >>.*", "\\1", colnames(tbl)[1])
+  colnames(tbl) = gsub(".* >> (.*)","\\1", colnames(tbl))
+  tbl = as_tibble(tbl)
+  return(tbl)
+}
+
+```
+
+
+
+
+```{r}
+tbl= pbapply::pblapply(3:17, tmp_get_wikitable)
+
+
+
+
+```
+
+```{r}
+tbl.tmp = lapply(tbl, function(df){
+  colnames(df) = c("a", "b", "c", "d", "e")
+  return(df)
+})
+
+
+```
+
+
+```{r}
+godtong_list = do.call(rbind, tbl.tmp)
+```
+
+```{r eval=FALSE}
+save(godtong_list, file = "~/GIT/lhdata/data/godtongue_list.rda")
+```
+
+## cleanup
+
+```{r}
+godtong_list.cln = 
+  godtong_list %>%
+  mutate(date= paste0(e, b),
+         date2= lubridate::as_date(date))
+```
+
+## map to existing files
+
+```{r}
+gt_posts = data.table::fread("~/GIT/lhdata/data/known_godtongue.txt", header=FALSE)
+```
+
+
+```{r}
+postdir = "~/GIT/owaraisite/content/post/"
+
+
+
+```
+
+```{r test}
+
+info = lapply(gt_posts$V1, function(fi){
+  
+ # try(yaml::read_yaml(paste0(postdir, fi)))
+  file = paste0(postdir, fi)
+  
+  lines = xfun::file_string(file)
+  content = gsub("^---.*?---\n", "", lines)
+  header = gsub("^---(.*?)\n---\n.*", "\\1", lines)
+  
+  rslt = try(yaml::yaml.load(header))
+  
+  
+  rslt.df = data.frame(
+    title= rslt$title,
+    slug = rslt$slug,
+    publishdate = rslt$publishdate,
+    stringsAsFactors=FALSE
+  )
+  
+  return(rslt.df)
+})
+
+
+```
+
+
+```{r}
+gt_known = do.call(rbind, info)
+```
+
+```{r}
+gt_known$publishdate = lubridate::as_date(gt_known$publishdate)
+```
+
+```{r}
+
+gt_known.cln = gt_known %>%
+  mutate(publishdate_nb1 = publishdate -1,
+         publishdate_nb2 = publishdate +1) %>%
+  mutate(mapped=ifelse(publishdate %in% godtong_list.cln$date2, 1,0),
+         mapped = ifelse(publishdate_nb1 %in% godtong_list.cln$date2, 1,mapped),
+         mapped = ifelse(publishdate_nb2 %in% godtong_list.cln$date2, 1,mapped)
+         )
+
+# gt_known$publishdate %in% godtong_list.cln$date2
+```
+
+
+```{r}
+table(gt_known.cln$mapped)
+```
+
+
