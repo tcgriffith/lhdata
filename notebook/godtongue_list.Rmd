@@ -1,0 +1,36 @@
+---
+title: "Untitled"
+author: "TC"
+date: "10/22/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(kableExtra)
+```
+
+<style>
+.main-container{
+  max-width: 100% !important
+}
+</style>
+## dadada
+
+updated: `r Sys.Date()`
+
+```{r}
+load("~/GIT/lhdata/data/godtongue_list.rda")
+```
+
+```{r}
+# DT::datatable(godtong_list, options= list(pageLength=1000))
+```
+
+```{r}
+godtong_list %>%
+  DT::datatable()
+```
+
+
