@@ -1,0 +1,101 @@
+---
+title: "Untitled"
+author: "TC"
+date: "10/23/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rvest)
+library(dplyr)
+library(xml2)
+# html_table()
+```
+
+## R Markdown
+
+```{r}
+url = "https://www.tv-asahi.co.jp/ametalk/backnumber/"
+```
+
+```{r}
+urls= paste0(url, "backnumber",2006:2018,".html")
+
+urlsall=c(urls,
+          "https://www.tv-asahi.co.jp/ametalk/backnumber/backnumber.html")
+```
+
+
+```{r}
+
+extract_guest = function(suburl) {
+  Sys.sleep(1)
+  guest =
+    suburl %>%
+    read_html() %>%
+    xml_find_all(xpath = "/html/body/div[2]/div[2]/div/div/div/div[1]/div[1]/div[1]/div[2]/p") %>%
+    xml_contents() %>%
+    paste0(collapse = " ")
+  return(guest)
+}
+
+extractit = function(url) {
+  
+  year = basename(url) %>% gsub("backnumber(.*).html","\\1",.)
+  
+  if (stringr::str_length(year) <2) year = lubridate::year(Sys.Date())
+  
+  tmphtml = url %>% read_html()
+  
+  title = tmphtml %>%
+    xml_find_all(xpath = "/html/body/ul[2]/li/a/p") %>%
+    as.character() %>%
+    gsub("<p .*?>(.*)</p>", "\\1", .) %>%
+    gsub("(.*)<br>(.*)", "\\2", .)
+
+  date = tmphtml %>%
+    xml_find_all(xpath = "/html/body/ul[2]/li/a/p") %>%
+    as.character() %>%
+    gsub("<p .*?>(.*)</p>", "\\1", .) %>%
+    gsub("(.*)<br>(.*)", "\\1", .) %>%
+    paste0(year,"年",.)
+  
+  link = tmphtml %>%
+    xml_find_all(xpath = "/html/body/ul[2]/li/a") %>%
+    xml_attr("href") %>%
+    paste0("https://www.tv-asahi.co.jp", .)
+  
+  guest = pbapply::pbsapply(link, extract_guest)
+  
+  df = tibble(date, title, link, guest)
+
+  return(df)
+}
+
+
+```
+
+```{r}
+extractit(urlsall[1])
+```
+
+
+
+```{r}
+urlsall[1] %>% read_html() %>%
+    xml_find_all(xpath = "/html/body/ul[2]/li/a/p") %>%
+    as.character() %>%
+    gsub("<p .*?>(.*)</p>", "\\1", .) %>%
+  gsub("(.*)<br>.*","\\1", .)
+```
+
+```{r}
+data.ame = lapply(urlsall, extractit)
+```
+
+```{r}
+data.ame.all = do.call(rbind, data.ame)
+```
+
+

@@ -9,20 +9,13 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(htmltab)
 library(dplyr)
+library(lubridate)
+library(tidyr)
 ```
 
-## R Markdown
+## Scrape it
 
 
-```{r}
-# library(rvest)
-
-```
-
-```{r}
-url = "https://ja.wikipedia.org/wiki/%E3%82%B4%E3%83%83%E3%83%89%E3%82%BF%E3%83%B3#%E6%94%BE%E9%80%81%E3%83%AA%E3%82%B9%E3%83%88"
-
-```
 
 ```{r}
 ### https://stackoverflow.com/questions/47585699/rvest-html-table-error-error-in-outj-k-subscript-out-of-bounds
@@ -30,11 +23,10 @@ url = "https://ja.wikipedia.org/wiki/%E3%82%B4%E3%83%83%E3%83%89%E3%82%BF%E3%83%
 ## htmltab handles tables better
 
 
-tmp_get_wikitable = function(i) {
+tmp_get_wikitable = function(i, url) {
   tbl =
     url %>%
   htmltab(i)
-  
   
   tbl$year = gsub("(.*) >>.*", "\\1", colnames(tbl)[1])
   colnames(tbl) = gsub(".* >> (.*)","\\1", colnames(tbl))
@@ -45,14 +37,14 @@ tmp_get_wikitable = function(i) {
 ```
 
 
+```{r}
+url = "https://ja.wikipedia.org/wiki/%E3%82%B4%E3%83%83%E3%83%89%E3%82%BF%E3%83%B3#%E6%94%BE%E9%80%81%E3%83%AA%E3%82%B9%E3%83%88"
+
+```
 
 
 ```{r}
-tbl= pbapply::pblapply(3:17, tmp_get_wikitable)
-
-
-
-
+tbl= pbapply::pblapply(3:17, tmp_get_wikitable, url=url)
 ```
 
 ```{r}
@@ -61,93 +53,90 @@ tbl.tmp = lapply(tbl, function(df){
   return(df)
 })
 
-
-```
-
-
-```{r}
 godtong_list = do.call(rbind, tbl.tmp)
+
+# save(godtong_list, file = "~/GIT/lhdata/data/godtongue_list.rda")
 ```
 
-```{r eval=FALSE}
-save(godtong_list, file = "~/GIT/lhdata/data/godtongue_list.rda")
-```
-
-## cleanup
-
-```{r}
-godtong_list.cln = 
-  godtong_list %>%
-  mutate(date= paste0(e, b),
-         date2= lubridate::as_date(date))
-```
 
 ## map to existing files
 
 ```{r}
-gt_posts = data.table::fread("~/GIT/lhdata/data/known_godtongue.txt", header=FALSE)
+# gt_posts = data.table::fread("~/GIT/lhdata/data/known_godtongue.txt", header=FALSE)
+
+postlist = list.files("~/GIT/owaraisite/content/post/", pattern=".*-.*.md", full.names=TRUE)
+
 ```
 
 
 ```{r}
-postdir = "~/GIT/owaraisite/content/post/"
-
-
-
-```
-
-```{r test}
-
-info = lapply(gt_posts$V1, function(fi){
-  
- # try(yaml::read_yaml(paste0(postdir, fi)))
-  file = paste0(postdir, fi)
-  
-  lines = xfun::file_string(file)
+get_postmeta= function(fpost){
+  lines = xfun::file_string(fpost)
   content = gsub("^---.*?---\n", "", lines)
   header = gsub("^---(.*?)\n---\n.*", "\\1", lines)
   
   rslt = try(yaml::yaml.load(header))
   
-  
   rslt.df = data.frame(
     title= rslt$title,
     slug = rslt$slug,
     publishdate = rslt$publishdate,
+    bangumi = rslt$bangumi,
+    
     stringsAsFactors=FALSE
   )
   
   return(rslt.df)
-})
+}
 
-
+get_postmeta_v = function(postlist){
+  rslt.df.l = lapply(postlist, get_postmeta)
+  
+  rslt.df.l.df = do.call(rbind, rslt.df.l)
+  
+  rslt.df.l.df$fpost = postlist
+  return(rslt.df.l.df)
+}
 ```
 
 
 ```{r}
-gt_known = do.call(rbind, info)
-```
-
-```{r}
-gt_known$publishdate = lubridate::as_date(gt_known$publishdate)
-```
-
-```{r}
-
-gt_known.cln = gt_known %>%
-  mutate(publishdate_nb1 = publishdate -1,
-         publishdate_nb2 = publishdate +1) %>%
-  mutate(mapped=ifelse(publishdate %in% godtong_list.cln$date2, 1,0),
-         mapped = ifelse(publishdate_nb1 %in% godtong_list.cln$date2, 1,mapped),
-         mapped = ifelse(publishdate_nb2 %in% godtong_list.cln$date2, 1,mapped)
-         )
-
-# gt_known$publishdate %in% godtong_list.cln$date2
+mydata = get_postmeta_v(postlist)
 ```
 
 
 ```{r}
-table(gt_known.cln$mapped)
+godtong_subbed = mydata %>%
+  mutate(publishdate = as_date(publishdate)) %>%
+mutate(publishdate_nb1 = publishdate - 1,
+       publishdate_nb2 = publishdate + 1) %>%
+  mutate(
+    av = gsub(".*-(.*)", "\\1", slug),
+    link = paste0(
+      "<a href='",
+      "/post/",
+      slug,
+      "'>LINK</a>"
+    )
+  ) %>%
+  pivot_longer(cols =starts_with("publishdate"),
+               names_to="dummy",
+               values_to="publishdate") %>%
+  select(-dummy) %>%
+  filter(bangumi == "神舌") 
 ```
+
+```{r}
+godtong_list.cln = godtong_list %>%
+  mutate(publishdate = as_date(paste0(e,b))) %>%
+  left_join(godtong_subbed, by=c("publishdate" = "publishdate"))
+```
+
+
+```{r}
+save(godtong_list.cln, file=here::here("/data/godtongue_list_cln.rda"))
+```
+
+
 
 
