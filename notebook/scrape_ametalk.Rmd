@@ -98,4 +98,7 @@ data.ame = lapply(urlsall, extractit)
 data.ame.all = do.call(rbind, data.ame)
 ```
 
+```{r}
+save(data.ame.all, file = here::here("/data/data.ame.all.rda"))
+```
 
