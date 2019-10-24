@@ -10,6 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(rvest)
 library(dplyr)
 library(xml2)
+library(tidyr)
+library(lubridate)
 # html_table()
 ```
 
@@ -30,14 +32,21 @@ urlsall=c(urls,
 ```{r}
 
 extract_guest = function(suburl) {
+  
   Sys.sleep(1)
+
   guest =
     suburl %>%
     read_html() %>%
-    xml_find_all(xpath = "/html/body/div[2]/div[2]/div/div/div/div[1]/div[1]/div[1]/div[2]/p") %>%
-    xml_contents() %>%
-    paste0(collapse = " ")
-  return(guest)
+    xml2::xml_find_all(xpath = './/div[@class="txt-box-detail summernote"]/p') %>%
+    xml2::xml_contents() %>%
+    as.character()
+  # xml2::xml_children() %>%
+  
+  guest.cln =
+    stringr::str_trim(guest[grepl("[\u3040-\u309f]|[\u30a0-\u30ff]", guest)]) %>%
+    paste0(collapse = "＆")
+  return(guest.cln)
 }
 
 extractit = function(url) {
@@ -59,16 +68,16 @@ extractit = function(url) {
     as.character() %>%
     gsub("<p .*?>(.*)</p>", "\\1", .) %>%
     gsub("(.*)<br>(.*)", "\\1", .) %>%
-    paste0(year,"年",.)
+    paste0(year,"年",.) 
   
   link = tmphtml %>%
     xml_find_all(xpath = "/html/body/ul[2]/li/a") %>%
     xml_attr("href") %>%
     paste0("https://www.tv-asahi.co.jp", .)
   
-  guest = pbapply::pbsapply(link, extract_guest)
+  summary = pbapply::pbsapply(link, extract_guest)
   
-  df = tibble(date, title, link, guest)
+  df = tibble(date, title, link, summary)
 
   return(df)
 }
@@ -76,29 +85,116 @@ extractit = function(url) {
 
 ```
 
-```{r}
-extractit(urlsall[1])
+```{r eval=FALSE}
+extractit(urlsall[14])
 ```
 
 
 
-```{r}
-urlsall[1] %>% read_html() %>%
-    xml_find_all(xpath = "/html/body/ul[2]/li/a/p") %>%
-    as.character() %>%
-    gsub("<p .*?>(.*)</p>", "\\1", .) %>%
-  gsub("(.*)<br>.*","\\1", .)
-```
-
-```{r}
+```{r eval=FALSE}
 data.ame = lapply(urlsall, extractit)
-```
 
-```{r}
 data.ame.all = do.call(rbind, data.ame)
-```
 
-```{r}
 save(data.ame.all, file = here::here("/data/data.ame.all.rda"))
 ```
+
+## clean it up
+
+
+```{r}
+load(here::here("/data/data.ame.all.rda"))
+```
+
+
+```{r}
+data.ame.cln = 
+data.ame.all %>%
+  mutate(date2= lubridate::as_date(gsub("(.*?日).*","\\1", date)))
+
+
+# table(is.na(data.ame.cln$date2)) 
+```
+
+
+## map to existing files
+
+```{r}
+# gt_posts = data.table::fread("~/GIT/lhdata/data/known_godtongue.txt", header=FALSE)
+
+postlist = list.files("~/GIT/owaraisite/content/post/", pattern=".*-.*.md", full.names=TRUE)
+
+```
+
+
+```{r}
+get_postmeta= function(fpost){
+  lines = xfun::file_string(fpost)
+  content = gsub("^---.*?---\n", "", lines)
+  header = gsub("^---(.*?)\n---\n.*", "\\1", lines)
+  
+  rslt = try(yaml::yaml.load(header))
+  
+  rslt.df = data.frame(
+    title= rslt$title,
+    slug = rslt$slug,
+    publishdate = rslt$publishdate,
+    bangumi = rslt$bangumi,
+    
+    stringsAsFactors=FALSE
+  )
+  
+  return(rslt.df)
+}
+
+get_postmeta_v = function(postlist){
+  rslt.df.l = lapply(postlist, get_postmeta)
+  
+  rslt.df.l.df = do.call(rbind, rslt.df.l)
+  
+  rslt.df.l.df$fpost = postlist
+  return(rslt.df.l.df)
+}
+```
+
+
+```{r}
+mydata = get_postmeta_v(postlist)
+```
+
+
+```{r}
+ametalk_subbed = mydata %>%
+  mutate(publishdate = as_date(publishdate)) %>%
+mutate(publishdate_nb1 = publishdate - 1,
+       publishdate_nb2 = publishdate + 1) %>%
+  mutate(
+    av = gsub(".*-(.*)", "\\1", slug),
+    link = paste0(
+      "<a href='",
+      "/post/",
+      slug,
+      "'>LINK</a>"
+    )
+  ) %>%
+  pivot_longer(cols =starts_with("publishdate"),
+               names_to="dummy",
+               values_to="publishdate") %>%
+  select(-dummy) %>%
+  filter(bangumi == "ametalk") 
+```
+
+```{r}
+ame_list.cln = data.ame.cln %>%
+  mutate(publishdate = date2) %>%
+  left_join(ametalk_subbed, by=c("publishdate" = "publishdate"))
+```
+
+
+```{r}
+save(ame_list.cln, file=here::here("/data/ame_list.cln.rda"))
+```
+
+
+
 
