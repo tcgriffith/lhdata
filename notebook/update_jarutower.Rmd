@@ -53,6 +53,13 @@ bangumi_map$V1 = tolower(bangumi_map$V1)
 
 ## split
 
+```{r}
+# vlist.tower.old = vlist.tower
+
+# save(vlist.tower.old, file= here::here("data/vlist.tower.old"))
+
+load(here::here("data/vlist.tower.old"))
+```
 
 
 ```{r}
@@ -74,7 +81,18 @@ vlist.new <- vlist.newm %>%
 vlist.tower = vlist.newm %>%
   filter(!aid %in% oldaid, !aid %in% manual_filter$aid) %>%
   filter(grepl("jaru.*tower", title, ignore.case = TRUE))
+
+
+has_newtower = ! all(vlist.tower$aid %in% vlist.tower.old$aid)
 ```
+
+```{r}
+vlist.tower.old = vlist.tower
+
+save(vlist.tower.old, file= here::here("data/vlist.tower.old"))
+```
+
+
 
 ## output others
 
@@ -97,7 +115,11 @@ if (nrow(vlist.new) > 0) {
   
   generate_post2(vlist.new.anno, post_path)
   
+} else{
+  message("### no new jarujaru")
 }
+
+
 ```
 
 
@@ -107,7 +129,10 @@ if (nrow(vlist.new) > 0) {
 
 
 
+
 ```{r}
+
+
 today = Sys.Date()
 weight = 200000 - as.numeric(format(today,"%y%m%d"))
 
@@ -133,15 +158,6 @@ brief: \"JARUJARU自称拥有8000个段子，现在以「JARU JARU TOWER」的�
 )
 
 
-
-
-
-# vlist.tower$title
-```
-
-
-```{r}
-
 class(vlist.tower$created) = "POSIXct"
 
 mytbl =
@@ -156,11 +172,6 @@ vlist.tower %>%
   select(id, TITLE = title2, UPDATE = created2, link) %>%
   knitr::kable(format = "markdown")
 
-# mytbl
-```
-
-
-```{r}
 alltower = c(header, 
              "\n![flyer](https://raw.githubusercontent.com/tcgriffith/owaraisite/master/static/img/jarutower.jpg)\n\n",
              "> JARUJARU自称拥有8000个段子，现在以「JARU JARU TOWER」的形式在公式HP和油管每天更新一个。更新一次即是加建一层，居民则是短剧角色：由JARUJARU扮演的奇怪的人。距离「JARU JARU TOWER」建成8000层的2039年11月7日还有二十年。\n",
@@ -168,10 +179,23 @@ alltower = c(header,
              "",
              mytbl)
 
-filepath = "~/GIT/owaraisite/content/neta/jarutower.md"
-fileConn <- file(filepath)
-writeLines(alltower, fileConn)
-close(fileConn)
-message(paste0(filepath, " finished!"))
+# mytbl
+```
+
+
+```{r}
+
+
+if(has_newtower) {
+  filepath = "~/GIT/owaraisite/content/neta/jarutower.md"
+  fileConn <- file(filepath)
+  writeLines(alltower, fileConn)
+  close(fileConn)
+  message(paste0(filepath, " finished!"))
+} else{
+  message("## no new jarutower")
+}
+
+
 ```
 
