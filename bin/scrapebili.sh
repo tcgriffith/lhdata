@@ -12,7 +12,7 @@ git pull
 ~/GIT/lhdata/bin/update_wiki.sh
 ~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/update_jarutower.Rmd
 ~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/daily_updates.Rmd
-~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/update_from_flarum.Rmd
+# ~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/update_from_flarum.Rmd
 # ~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/update_tags.Rmd
 # ~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/update_bangumi.Rmd
 
@@ -21,7 +21,7 @@ grep -l "bangumi.*段子" ~/GIT/owaraisite/content/post/*.md |xargs mv -t ~/GIT/
 ~/GIT/lhdata/R/run_rmd.R  ~/GIT/lhdata/notebook/update_neta.Rmd
 
 # update flarum post
-curl "https://d.owaraiclub.com/api/discussions?filter[q]=tag:whatsnew" > ~/GIT/owaraisite/data/flarum.json
+# curl "https://d.owaraiclub.com/api/discussions?filter[q]=tag:whatsnew" > ~/GIT/owaraisite/data/flarum.json
 
 git status
 
