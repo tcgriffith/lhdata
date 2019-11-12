@@ -1,0 +1,39 @@
+---
+title: "Untitled"
+author: "TC"
+date: "10/31/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r}
+library(rvest)
+library(httr)
+```
+
+
+```{r}
+url="https://sm.ms/api/v2/upload"
+
+
+```
+
+
+```{r}
+test = httr::POST(
+  url = url,
+  content_type("multipart/form-data"),
+  body = list(smfile = upload_file(
+    "~/GIT/owaraisite/static/img/ametalk.jpg"
+  ),
+  smfile = upload_file("~/GIT/owaraisite/static/img/lonha.jpg")
+  )
+)
+```
+

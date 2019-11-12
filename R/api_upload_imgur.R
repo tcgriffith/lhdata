@@ -43,6 +43,9 @@ api_upload_github <- function(pic, outdir) {
     paste0("https://raw.githubusercontent.com/tcgriffith/owaraisite/master/static/tmpimg/",basename(pic), ".480.jpg")
 
   return(githuburl)
+}
 
+api_upload_smms = function(pic){
 
 }
+

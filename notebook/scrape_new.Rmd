@@ -1,16 +1,18 @@
 ---
-title: "scrape_new"
+title: "Untitled"
 author: "TC"
-date: "November 6, 2017"
+date: "October 24, 2017"
 output: html_document
 ---
 
 ```{r setup, include=FALSE,message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(dplyr)
-library(lubridate)
+suppressMessages(library(dplyr))
+suppressMessages(library(lubridate))
 pkg_path="~/GIT/lhdata"
 post_path="~/GIT/owaraisite/content/post/"
+
+neta_path="~/GIT/owaraisite/content/neta/"
 
 if (Sys.info()["sysname"]=="Windows"){
   pkg_path="c:/Users/TC/GIT/lhdata"
@@ -29,7 +31,7 @@ source(encoding="UTF-8",file=paste0(pkg_path,"/R/annotate_vlist_tmp.R"))
 source(encoding="UTF-8",file=paste0(pkg_path,"/R/fromJSON_fix.R"))
 
 # source(encoding="UTF-8",file=paste0(pkg_path,"/R/annotate_vlist.R"))
-load(paste0(pkg_path,"/data/mid.rda"))
+# load(paste0(pkg_path,"/data/mid.rda"))
 
 if (file.exists("/data/manual_filter.rda")){
   load(paste0(pkg_path,"/data/manual_filter.rda"))
@@ -39,10 +41,149 @@ if (file.exists("/data/manual_filter.rda")){
 ```
 
 
+```{r}
+# mid.df = jsonlite::fromJSON(here::here("data/author_list.json"))
+mid.df = jsonlite::fromJSON(paste0(pkg_path, "/data/author_list.json"))
+
+bangumi_map =
+  data.table::fread(paste0(pkg_path, "/data/bangumi_list.txt"), header =
+                      FALSE)
+bangumi_map$V1 = tolower(bangumi_map$V1)
+```
+
+
+## downloadthings
+
+```{r}
+message("###########################################################")
+message(Sys.time())
+message("...start scraping\n")
+#source(encoding="UTF-8",file=paste0(pkg_path,"/R/api_getuploads.R")
+
+
+vlist.all <- data.frame()
+
+for ( i in 1:nrow(mid.df)){
+  vlist <- api_getuploads_fp(mid.df$mids[i],kw=mid.df$kw[i])
+  vlist$zmz=mid.df$zmz[i]
+  vlist.all <- rbind(vlist.all,vlist)
+}
+
+
+
+## get new vlist
+p= list.files(post_path)
+pneta = list.files(neta_path)
+oldaid <- c(gsub('^.*-(.*).md$','\\1',p),
+            gsub('^.*-(.*).md$','\\1',pneta))
+
+
+vlist.new <- vlist.all %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
+
+
+
+message("###########################################################")
+
+message(paste0("...scraping finished, ",nrow(vlist.new)," new posts"))
+if (nrow(vlist.new)==0) {
+  message("...no new post detected, quitting")
+  q('no')
+} else{
+  writeLines(vlist.new$title)
+}
+
+```
+
+
+
+## manually fetching
+
+
+
+
+```{r test1, eval=FALSE}
+vlist.newm <-api_getuploads(mid.df$mids[14],kw = "imoko字幕")
+
+vlist.newm$zmz=mid.df$zmz[14]
+
+p= list.files(post_path)
+oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+
+
+vlist.new <- vlist.newm %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
+
+#vlist.new.anno$zmz="伦敦之心字幕组"
+```
+
+
+```{r test0, eval=FALSE}
+vlist.new <-api_getuploads(5858153,kw = "翻唱")
+
+vlist.new$zmz="伦敦之心字幕组"
+
+#vlist.new.anno$zmz="伦敦之心字幕组"
+```
+
+
+```{r test2, eval=FALSE}
+##三葉__ 东京03
+
+vlist.new <-api_getuploads(119571380,kw = "短剧+字幕")
+
+vlist.new$zmz="个人字幕组"
+
+#vlist.new.anno$zmz="伦敦之心字幕组"
+```
+
+```{r test3, eval=FALSE}
+# akihoni 东京03 412335
+
+vlist.new <-api_getuploads(412335,kw = "东京03+字幕")
+
+vlist.new$zmz="个人字幕组"
+
+
+```
+
+```{r test4, eval=FALSE}
+# 长野县名产翅膀 ametalk 1464994
+
+vlist.new <-api_getuploads(1464994,kw = "字幕")
+
+vlist.new$zmz="个人字幕组"
+
+vlist.new = vlist.new[1,]
+
+```
 
 
 
 ```{r test5, eval= FALSE}
+# 汉中则为橙 381936 ametalk 
+
+
+vlist.newm <-api_getuploads(381936,kw = "风物诗字幕组")
+
+# vlist.new <- vlist.new %>%
+#   filter(grepl("ametalk|rahmens|speedwagon",title,ignore.case = TRUE))
+
+vlist.newm$zmz="风物诗字幕组"
+
+p= list.files(post_path)
+oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+
+
+vlist.new <- vlist.newm %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
+
+
+
+
+```
+
+```{r test6, eval= FALSE}
 # sclarkca_ 764931 字幕 
 
 
@@ -51,60 +192,126 @@ vlist.newm <-api_getuploads(764931,kw = "字幕")
 # vlist.new <- vlist.new %>%
 #   filter(grepl("ametalk|rahmens|speedwagon",title,ignore.case = TRUE))
 
-vlist.newm$zmz="hitori字幕组"
+vlist.newm$zmz="风物诗字幕组"
 
 p= list.files(post_path)
 oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
 
 
-vlist.new <- vlist.newm %>%
+vlist.new <- vlist.newm %>% 
   filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
 
 
 
 
 ```
+
+
+```{r test7, eval=FALSE}
+# nonkotori 576772
+
+vlist.newm <-api_getuploads(576772,kw = "字幕")
+
+vlist.newm$zmz="nonkotori字幕组"
+
+p= list.files(post_path)
+oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+
+
+vlist.new <- vlist.newm %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
+
+```
+
+```{r test8, eval=FALSE}
+# 翅膀包工 1464994
+
+vlist.newm <-api_getuploads(1464994,kw = "翅膀包工")
+
+vlist.newm$zmz="翅膀包工队字幕组"
+
+p= list.files(post_path)
+oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+
+
+vlist.new <- vlist.newm %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
+
+```
+
+```{r test9, eval=FALSE}
+
+
+vlist.newm <-api_getuploads(2092340,kw = "中字")
+
+vlist.newm$zmz="永远的新规"
+
+p= list.files(post_path)
+oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+
+
+vlist.new <- vlist.newm %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
+
+```
+
+
+```{r test10, eval=FALSE}
+
+vlist.newm <-api_getuploads(1878868,kw = "字幕")
+
+vlist.newm$zmz="OWALIAR字幕组"
+
+p= list.files(post_path)
+oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
+
+
+vlist.new <- vlist.newm %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
+
+```
+
+
 
 ```{r eval= FALSE}
-# clos 385066467 字幕 
-
-
-vlist.newm <-api_getuploads(385066467,kw = "字幕")
-
-# vlist.new <- vlist.new %>%
-#   filter(grepl("ametalk|rahmens|speedwagon",title,ignore.case = TRUE))
-
-vlist.newm$zmz="冲绳六岁小女孩字幕组"
-
-p= list.files(post_path)
-oldaid <- ((gsub('^.*-(.*).md$','\\1',p)))
-
-
-vlist.new <- vlist.newm %>%
-  filter(!aid %in% oldaid, !aid %in% manual_filter$aid)
-
+vlist.new.anno$bangumi
 
 ```
 
 
-```{r}
-vlist.fws = api_getuploads(381936)
 
-sets = c("25742854", "25709229", "25667045", "25646859", "25623642", "25591161", "25584412", "25541196", "25529498", "25476848", "25249399", "17657597", "17482259", "17365385", "17194358", "17171414", "17152860")
+## aaa
 
+```{r test1, eval=FALSE}
+vlist.new <-api_getuploads(15089033,kw = "麻将馆字幕组")
 
-
-```
-
-
-```{r}
-vlist.new = vlist.fws[which(vlist.fws$aid %in% sets),]
-
-vlist.new$zmz="风物诗字幕组"
+vlist.new$zmz="麻将馆字幕组"
 
 ```
 
+```{r eval=FALSE}
+vlist.new <-api_getuploads(286909,kw = "中字")
 
+vlist.new$zmz="甲斐枝カエ"
+```
+
+```{r eval=FALSE}
+vlist.new <-api_getuploads(286909,kw = "中字")
+
+vlist.new$zmz="甲斐枝カエ"
+```
+
+```{r eval=FALSE}
+vlist.new <-api_getuploads(273228,kw = "字幕")
+
+vlist.new$zmz="假牙大叔"
+```
+
+```{r eval=FALSE}
+vlist.new <-api_getuploads(328388,kw = "中字")
+
+vlist.new$zmz="囧星硬盘子"
+```
 
 
 ## add info
@@ -115,9 +322,7 @@ vlist.new$zmz="风物诗字幕组"
 message("###########################################################")
 message("...starting downloading pics\n")
 #source("../R/annotate_vlist.R")
-vlist.new.anno <-annotate_vlist(vlist.new)
-
-generate_post2(vlist.new.anno,post_path)
+vlist.new.anno <-annotate_vlist(vlist.new, bangumi_map = bangumi_map, imgur = FALSE)
 
 ```
 
@@ -130,3 +335,5 @@ message("###########################################################")
 
 generate_post2(vlist.new.anno,post_path)
 ```
+
+
