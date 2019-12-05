@@ -46,6 +46,12 @@ bangumi_map =
   data.table::fread(paste0(pkg_path, "/data/bangumi_list.txt"), header =
                       FALSE)
 bangumi_map$V1 = tolower(bangumi_map$V1)
+
+p= list.files(post_path)
+pneta = list.files(neta_path)
+oldaid <- c(gsub('^.*-(.*).md$','\\1',p),
+            gsub('^.*-(.*).md$','\\1',pneta))
+
 ```
 
 
@@ -55,6 +61,58 @@ bangumi_map$V1 = tolower(bangumi_map$V1)
 
 
 ## manually fetching
+
+
+```{r eval=FALSE}
+## 405463 卡内
+
+##
+
+vlist.all <-api_getuploads(405463,kw = "字幕")
+
+vlist.all$zmz="卡内"
+
+
+vlist.new <- vlist.all %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid) %>%
+  filter(!grepl("MV", title))
+
+```
+
+
+
+```{r}
+## 412335 akihoni
+
+##
+
+vlist.all <-api_getuploads(412335,kw = "字幕")
+
+vlist.all$zmz="akihoni"
+
+
+vlist.new <- vlist.all %>% 
+  filter(!aid %in% oldaid, !aid %in% manual_filter$aid) %>%
+  filter(!grepl("kismy", title))
+
+```
+
+
+
+```{r}
+## 1953979 硝子日和
+
+##
+
+vlist.new <-api_getuploads(1953979,kw = "中字")
+
+vlist.new$zmz="硝子日和"
+
+
+
+
+```
+
 
 ```{r novels, eval=FALSE}
 
@@ -88,10 +146,6 @@ for ( i in 12:13){
 }
 
 
-p= list.files(post_path)
-pneta = list.files(neta_path)
-oldaid <- c(gsub('^.*-(.*).md$','\\1',p),
-            gsub('^.*-(.*).md$','\\1',pneta))
 
 
 vlist.new <- vlist.all %>% 
@@ -280,7 +334,7 @@ vlist.new.anno$bangumi
 
 
 
-## aaa
+
 
 ```{r test1, eval=FALSE}
 vlist.new <-api_getuploads(15089033,kw = "麻将馆字幕组")
@@ -325,6 +379,8 @@ message("...starting downloading pics\n")
 vlist.new.anno <-annotate_vlist(vlist.new, bangumi_map = bangumi_map, imgur = FALSE)
 
 ```
+
+
 
 ## output
 

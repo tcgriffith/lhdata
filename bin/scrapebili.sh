@@ -3,6 +3,12 @@
 # logs: run ~/bin/bilog
 
 echo "############################################"
+echo "... update lhdata"
+
+cd ~/GIT/lhdata/
+git pull
+
+echo "############################################"
 echo "...begin"
 cd ~/GIT/owaraisite/
 git pull
