@@ -1,0 +1,45 @@
+---
+title: "Untitled"
+author: "TC"
+date: "12/6/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(rvest)
+library(dplyr)
+library(xml2)
+library(tidyr)
+library(lubridate)
+source(here::here("/R/update_lh.R"))
+```
+
+```{r}
+load(here::here("/data/data.lh.rda"))
+load(here::here("/data/lh_list.cln.rda"))
+
+```
+
+
+```{r}
+# data.ame.new = update_ametalk_list(data.ame.all)
+data.lh.new = update_lh_list(data.lh)
+
+if (nrow(data.lh.new) > nrow(data.lh)){
+  data.lh = data.lh.new
+  save(data.lh, file = here::here("/data/data.lh.rda"))
+}
+```
+
+```{r}
+lh_list.cln =
+  data.lh.new %>%
+  mutate(publishdate = lubridate::as_date(gsub("(.*?日).*", "\\1", date)))
+```
+
+```{r}
+save(lh_list.cln, file = here::here("/data/lh_list.cln.rda"))
+```
+

@@ -1,0 +1,60 @@
+---
+title: "Untitled"
+author: "TC"
+date: "12/6/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rvest)
+library(dplyr)
+library(xml2)
+library(tidyr)
+library(lubridate)
+# html_table()
+
+source(here::here("R/update_amelist.R"))
+```
+
+
+```{r}
+load(here::here("/data/data.ame.all.rda"))
+
+load(here::here("/data/ame_list.cln.rda"))
+```
+
+
+
+
+```{r}
+data.ame.new = update_ametalk_list(data.ame.all)
+
+if (nrow(data.ame.new) > nrow(data.ame.all)){
+  data.ame.all = data.ame.new
+  save(data.ame.all, file = here::here("/data/data.ame.all.rda"))
+}
+
+
+
+```
+
+
+
+
+## map to existing posts
+
+
+```{r}
+
+ametalk_subbed = get_ame_subbed()
+
+ame_list.cln =
+  data.ame.all %>%
+  mutate(publishdate = lubridate::as_date(gsub("(.*?日).*", "\\1", date))) %>%
+  left_join(ametalk_subbed, by = c("publishdate" = "publishdate")) %>%
+  arrange(desc(publishdate))
+
+save(ame_list.cln, file=here::here("/data/ame_list.cln.rda"))
+```
+

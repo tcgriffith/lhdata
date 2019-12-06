@@ -107,14 +107,6 @@ load(here::here("/data/data.ame.all.rda"))
 ```
 
 
-```{r}
-data.ame.cln = 
-data.ame.all %>%
-  mutate(date2= lubridate::as_date(gsub("(.*?日).*","\\1", date)))
-
-
-# table(is.na(data.ame.cln$date2)) 
-```
 
 
 ## map to existing files
@@ -124,74 +116,22 @@ data.ame.all %>%
 
 postlist = list.files("~/GIT/owaraisite/content/post/", pattern=".*-.*.md", full.names=TRUE)
 
-```
 
-
-```{r}
-get_postmeta= function(fpost){
-  lines = xfun::file_string(fpost)
-  content = gsub("^---.*?---\n", "", lines)
-  header = gsub("^---(.*?)\n---\n.*", "\\1", lines)
-  
-  rslt = try(yaml::yaml.load(header))
-  
-  rslt.df = data.frame(
-    title= rslt$title,
-    slug = rslt$slug,
-    publishdate = rslt$publishdate,
-    bangumi = rslt$bangumi,
-    
-    stringsAsFactors=FALSE
-  )
-  
-  return(rslt.df)
-}
-
-get_postmeta_v = function(postlist){
-  rslt.df.l = lapply(postlist, get_postmeta)
-  
-  rslt.df.l.df = do.call(rbind, rslt.df.l)
-  
-  rslt.df.l.df$fpost = postlist
-  return(rslt.df.l.df)
-}
-```
-
-
-```{r}
 mydata = get_postmeta_v(postlist)
-```
 
 
-```{r}
+data.ame.cln = 
+data.ame.all %>%
+  mutate(date2= lubridate::as_date(gsub("(.*?日).*","\\1", date)))
+
 ametalk_subbed = mydata %>%
   mutate(publishdate = as_date(publishdate)) %>%
-mutate(publishdate_nb1 = publishdate - 1,
-       publishdate_nb2 = publishdate + 1) %>%
-  mutate(
-    av = gsub(".*-(.*)", "\\1", slug),
-    link = paste0(
-      "<a href='",
-      "/post/",
-      slug,
-      "'>LINK</a>"
-    )
-  ) %>%
-  pivot_longer(cols =starts_with("publishdate"),
-               names_to="dummy",
-               values_to="publishdate") %>%
-  select(-dummy) %>%
   filter(bangumi == "ametalk") 
-```
 
-```{r}
 ame_list.cln = data.ame.cln %>%
   mutate(publishdate = date2) %>%
   left_join(ametalk_subbed, by=c("publishdate" = "publishdate"))
-```
 
-
-```{r}
 save(ame_list.cln, file=here::here("/data/ame_list.cln.rda"))
 ```
 
