@@ -15,7 +15,7 @@ git push
 
 cd ~/GIT/owaraisite/
 
-Rscript R/R/buildrmd.R
+Rscript R/buildrmd.R
 
 # git status
 
