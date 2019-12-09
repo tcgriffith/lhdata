@@ -143,6 +143,8 @@ vlist.new %>%
 
 vlist.new3 = vlist.new2 %>% filter(!grepl("kismy",title))
 
+
+vlist.new = vlist.new3
 ```
 
 
