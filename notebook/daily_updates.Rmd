@@ -38,10 +38,7 @@ if (file.exists("/data/manual_filter.rda")){
 }else {
   manual_filter=data.frame(aid=NA)
 }
-```
 
-
-```{r}
 # mid.df = jsonlite::fromJSON(here::here("data/author_list.json"))
 mid.df = jsonlite::fromJSON(paste0(pkg_path, "/data/author_list.json"))
 
@@ -131,7 +128,7 @@ message("###########################################################")
 message(paste0("...scraping finished, ",nrow(vlist.new)," new posts"))
 if (nrow(vlist.new)==0) {
   message("...no new post detected, quitting")
-  q('no')
+  # q('no')
 } else{
   writeLines(vlist.new$title)
 }
@@ -142,6 +139,11 @@ vlist.new %>%
 
 ```
 
+```{r eval=FALSE}
+
+vlist.new3 = vlist.new2 %>% filter(!grepl("kismy",title))
+
+```
 
 
 ## add info
