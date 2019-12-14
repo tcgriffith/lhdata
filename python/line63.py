@@ -1,4 +1,0 @@
-        # '''
-        # json_data:
-        # {'status': True, 'data': {'list': [{'videos': [{'aid': 4801304, 'pic': 'http://i0.hdslb.com/bfs/archive/ea08d36d2e6a0b01cd41927fcd50562f3569e97f.jpg_320x200.jpg'}, {'aid': 4834239, 'pic': 'http://i0.hdslb.com/bfs/archive/277fc1bfdaeaaaeb88d1361d81982212561f4a2d.jpg_320x200.jpg'}], 'ctime': 1442651554, 'fav_box': 15453253, 'max_count': 200, 'atten_count': 0, 'count': 2, 'state': 0, 'name': '默认收藏夹'}, {'videos': [{'aid': 4624829, 'pic': 'http://i0.hdslb.com/bfs/archive/d6742b854443c0422efbecd43d9003156b449931.jpg_320x200.jpg'}, {'aid': 4572171, 'pic': 'http://i0.hdslb.com/bfs/archive/1631e3099a41b4b5cd985e10d291972c3507abaf.jpg_320x200.jpg'}], 'ctime': 1465127326, 'fav_box': 30047510, 'max_count': 150, 'atten_count': 0, 'count': 2, 'state': 2, 'name': '哦.interesting'}], 'count': 2}}
-        # '''
