@@ -81,7 +81,7 @@ oldaid <- c(gsub('^.*-(.*).md$','\\1',p),
 
 
 ```{r}
-# 翅膀包工 1464994
+
 
 vlist.newm <-api_getuploads(16423300,kw = "中字")
 
@@ -141,13 +141,22 @@ if (nrow(vlist.new) > 0) {
 ## output tower
 
 
+```{r}
+  today = Sys.Date()
+weight = 210000 - as.numeric(format(today,"%y%m%d"))
+
+weight
+
+```
 
 
 ```{r}
 
 getalltower = function(vlist.tower){
-  today = Sys.Date()
-weight = 200000 - as.numeric(format(today,"%y%m%d"))
+  # today = Sys.Date()
+# weight = 200000 - as.numeric(format(today,"%y%m%d"))
+  
+  weight=25000- as.numeric(Sys.Date()) 
 
 mytitle = vlist.tower %>% arrange(desc(created)) %>% pull(title)
 
@@ -166,6 +175,7 @@ description: 段子&#8226;NA
 weight: ",weight,"
 nodate: true
 brief: \"JARUJARU自称拥有8000个段子，现在以「JARU JARU TOWER」的形式在公式HP和油管每天更新一个。更新一次即是加建一层，居民则是短剧角色：由JARUJARU扮演的奇怪的人。距离「JARU JARU TOWER」建成8000层的2039年11月7日还有二十年。\"
+recomm: \"> 距离「JARU JARU TOWER」建成8000层的2039年11月7日还有二十年.\"
 ---
 "
 )
@@ -200,7 +210,7 @@ alltower = c(header,
 
 
 if (has_newtower) {
-  alltower = getalltower();
+  alltower = getalltower(vlist.tower);
   filepath = "~/GIT/owaraisite/content/neta/jarutower.md"
   fileConn <- file(filepath)
   writeLines(alltower, fileConn)
