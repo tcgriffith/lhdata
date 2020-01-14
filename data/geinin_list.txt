@@ -14,7 +14,7 @@ Miki Miki
 NewYork NewYork
 NONSTYLE NONSTYLE
 Panther Panther,パンサ
-PEACE PEACE
+PEACE PEACE,又吉直树
 Rahmens Rahmens
 RazerRamon RazerRamon
 Rozan Rozan
@@ -112,3 +112,12 @@ UNTOUCHABLE Untouchable,アンタッチャブル
 吉田们 吉田たち,吉田们
 咚嚓噹 咚嚓噹,トンツカタン
 INPULSE 板仓俊之,インパルス
+朋克布布 PUNKBOBO,punkbobo
+霜降明星 霜降明星
+印地安斯 印地安斯
+般若 般若
+Indians Indians
+朋克布布 PunkBooboo
+PlusMinus PlusMinus
+LongCoatDaddy LongCoatDaddy
+藤崎市场 藤崎マーケット,藤崎市场
