@@ -1,3 +1,4 @@
+#!/bin/bash
 echo "...working on wiki"
 
 wikipath=~/GIT/owaraisite/content/wiki/
