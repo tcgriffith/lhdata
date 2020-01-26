@@ -1,4 +1,4 @@
-#!/usr/bin/env Rscript 
+#!/usr/bin/env Rscript
 
 suppressPackageStartupMessages(library(dplyr))
 
@@ -7,10 +7,10 @@ post_path="~/GIT/owaraisite/content/post/"
 mid=data.table::fread(
 "
       mids           author              zmz             kw
-  26666749 来一发就走字幕组 来一发就走字幕组           字幕    
-     97990           小山君   大喜利王字幕组           字幕    
+  26666749 来一发就走字幕组 来一发就走字幕组           字幕
+     97990           小山君   大喜利王字幕组           字幕
    8665350             叔叔       4431字幕组           字幕
-    381936       汉中则为橙     风物诗字幕组   风物诗字幕组
+    381936       汉中则为橙     风物诗字幕组           字幕
    2916169     Babyhellface   水曜侦探事务所           中字
     576772        nonkotori  nonkotori字幕组           字幕
    1464994 翅膀包工队字幕组 翅膀包工队字幕组           中字
@@ -49,7 +49,7 @@ vlist.all = pbapply::pblapply(1:nrow(mid), function(i){
 
 vlist.all.df = do.call(rbind,vlist.all)
 
-vlist.all.df.new = vlist.all.df %>% 
+vlist.all.df.new = vlist.all.df %>%
   filter(! aid %in% oldav)
 
 
