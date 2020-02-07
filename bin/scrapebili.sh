@@ -29,7 +29,7 @@ echo "... update lhdata"
 
 # Rscript ~/GIT/lhdata/R/daily_update.R
 
-~/GIT/lhdata/bin/update_wiki.sh
+#~/GIT/lhdata/bin/update_wiki.sh
 ~/GIT/lhdata/R/update_jarutower.R
 ~/GIT/lhdata/R/daily_updates.R
 
