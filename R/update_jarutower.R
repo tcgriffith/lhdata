@@ -19,7 +19,7 @@ test = stringr::str_extract_all(tower.str, pattern="av[0-9]+")[[1]]
 
 oldaid.tower =gsub("^av","",test)
 
-oldaid= lhdata2::get_existing_aid("~/GIT/owaraisite/content/post/",
+oldaid= owaraitool::get_existing_aid("~/GIT/owaraisite/content/post/",
                         "~/GIT/owaraisite/content/neta/")
 
 
@@ -27,7 +27,7 @@ oldaid= lhdata2::get_existing_aid("~/GIT/owaraisite/content/post/",
 ## ---------------------------------------------------------------------
 
 
-vlist.newm <-lhdata2::api_getuploads(16423300,kw = "中字")
+vlist.newm <-owaraitool::api_getuploads(16423300,kw = "中字")
 
 vlist.newm$zmz="今天鱼"
 
@@ -51,12 +51,12 @@ if (nrow(vlist.new) > 0) {
   message("###########################################################")
   message("...starting downloading pics\n")
   #source("../R/annotate_vlist.R")
-  vlist.new.anno <- lhdata2::annotate_vlist(vlist.new, lhdata2::bangumi_map)
+  vlist.new.anno <- owaraitool::annotate_vlist(vlist.new, owaraitool::bangumi_map)
   
   message("###########################################################")
   message("...starting generating posts")
   
-  lhdata2::generate_post2(vlist.new.anno, post_path)
+  owaraitool::generate_post2(vlist.new.anno, post_path)
   
 } else{
   message("### no new jarujaru")

@@ -30,10 +30,14 @@ mid=data.table::fread(
     640575           驴三爷         驴叁字幕           字幕
    9301812   东海毛绒芝士熊     节奏不是主义           中字
    2872158        第8号仔牛         鲸人字幕           字幕
+   2871717   村上信五补给站   村上信五补给站           中字
+   501890586       七沢の星         七沢の星           中字
+   5988114 くりぃむしちゅー上田 くりぃむしちゅー上田   中字
+
 "
 )
 
-oldav= lhdata2::get_existing_aid("~/GIT/owaraisite/content/post/",
+oldav= owaraitool::get_existing_aid("~/GIT/owaraisite/content/post/",
                         "~/GIT/owaraisite/content/neta/")
 
 
@@ -43,7 +47,7 @@ message(Sys.time())
 message("...start scraping\n")
 
 vlist.all = pbapply::pblapply(1:nrow(mid), function(i){
-  vlist = lhdata2::api_getuploads_fp(mid$mids[i],kw=mid$kw[i])
+  vlist = owaraitool::api_getuploads_fp(mid$mids[i],kw=mid$kw[i])
   vlist$zmz=mid$zmz[i]
   return(vlist)
 })
@@ -67,14 +71,14 @@ if (nrow(vlist.all.df.new)==0) {
 message("###########################################################")
 message("...annotating\n")
 #source("../R/annotate_vlist.R")
-vlist.new.anno = lhdata2::annotate_vlist(vlist.all.df.new, bangumi_map = lhdata2::bangumi_map, imgur = FALSE)
+vlist.new.anno = owaraitool::annotate_vlist(vlist.all.df.new, bangumi_map = lhdata2::bangumi_map, imgur = FALSE)
 
 
 
 message("###########################################################")
 message("...generating posts")
 
-lhdata2::generate_post2(vlist.new.anno,post_path)
+owaraitool::generate_post2(vlist.new.anno,post_path)
 
 message("###########################################################")
 message("...finished")
