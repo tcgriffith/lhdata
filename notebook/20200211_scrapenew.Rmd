@@ -1,0 +1,253 @@
+---
+title: "20200211_scrapenew"
+author: "TC"
+date: "2/12/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## prep
+
+```{r}
+suppressPackageStartupMessages(library(dplyr))
+
+post_path="~/GIT/owaraisite/content/post/"
+lhdata_path="~/GIT/lhdata/"
+
+mid=data.table::fread(
+"
+      mids           author              zmz             kw
+  26666749 来一发就走字幕组 来一发就走字幕组           字幕
+     97990           小山君   大喜利王字幕组           字幕
+   8665350             叔叔       4431字幕组           字幕
+    381936       汉中则为橙     风物诗字幕组           字幕
+   2916169     Babyhellface   水曜侦探事务所           中字
+    576772        nonkotori  nonkotori字幕组           字幕
+   1464994 翅膀包工队字幕组 翅膀包工队字幕组           中字
+   2092340       永远的新规       永远的新规           渣翻
+   1878868       345channel    OWALIAR字幕组           字幕
+    633450          Notttti         镰鼬字幕           字幕
+    945697        凉薯Imoko        imoko字幕           字幕
+    113698   伤不起的见光死   伤不起的见光死           中字
+    945697   无人岛的星期六         周六字幕           字幕
+    273228         假牙大叔             假牙           字幕
+    328388       囧星硬盘子             菜刀           中字
+    328388       囧星硬盘子             菜刀           字幕
+    328388       囧星硬盘子   新谷さん字幕组 新谷さん字幕组
+ 481354309     re派派派派派             派派           中字
+   1953979         硝子日和         硝子日和           中字
+    412335          akihoni          akihoni           字幕
+    640575           驴三爷         驴叁字幕           字幕
+   9301812   东海毛绒芝士熊     节奏不是主义           中字
+   2872158        第8号仔牛         鲸人字幕           字幕
+   2871717   村上信五补给站   村上信五补给站           中字
+   501890586       七沢の星         七沢の星           中字
+   5988114 くりぃむしちゅー上田 くりぃむしちゅー上田   中字
+"
+)
+
+# lhdata2::bangumi_map
+bangumi_map=data.table::fread(paste0(lhdata_path,"data/bangumi_list.txt"),header=FALSE)
+
+bangumi_map$V1 = tolower(bangumi_map$V1)
+
+oldav= owaraitool::get_existing_aid("~/GIT/owaraisite/content/post/",
+                        "~/GIT/owaraisite/content/neta/")
+```
+
+## runit
+
+```{r}
+mid.filt=mid[21:26,]
+
+
+
+vlist.all = pbapply::pblapply(1:nrow(mid.filt), function(i){
+  message("## processing ",mid.filt$author[i])
+  vlist = owaraitool::api_getuploads(mid.filt$mids[i],kw=mid.filt$kw[i])
+  vlist$zmz=mid.filt$zmz[i]
+  return(vlist)
+})
+
+vlist.all.df = do.call(rbind,vlist.all)
+
+vlist.all.df.new = vlist.all.df %>%
+  filter(! aid %in% oldav)
+```
+
+```{r}
+annotate_vlist_v2= function (vlist.new, bangumi_map, imgur = TRUE) 
+{
+  if (nrow(vlist.new) == 0) {
+    message("# no post to annotate")
+    return(NULL)
+  }
+  vlist.new.anno <- vlist.new
+  class(vlist.new.anno$created) <- "POSIXct"
+  vlist.new.anno <- vlist.new.anno %>% mutate(up = author) %>% 
+    mutate(bangumi = tolower(getbangumi2(title, bangumi_map))) %>% 
+    mutate(title_bk = title, title = gsub("【.*?】", "", 
+      title_bk)) %>% mutate(airdate = getyearsdf(title)) %>% 
+    mutate(slug = paste0(format(created, "%Y-%m-%d"), "-", 
+      format(airdate, "%y%m%d"), "-", aid)) %>% mutate(desc = description) %>% 
+    mutate(description = paste0(bangumi, "&#8226;", format(airdate, 
+      "%y%m%d"))) %>% mutate(date = Sys.time()) %>% mutate(publishdate = ifelse(is.na(airdate), 
+    format(lubridate::parse_date_time("20010103", orders = "Y-m-d"), 
+      "%Y-%m-%d"), format(airdate, "%Y-%m-%d"))) %>% mutate(weight = 2e+05 - 
+    as.numeric(format(date, "%y%m%d"))) %>% mutate(date = format(date, 
+    "%Y-%m-%d"))
+  vlist.new.anno$cid = NA
+  vlist.new.anno$imgur = NA
+  vlist.new.anno$tags = NA
+  for (i in 1:nrow(vlist.new.anno)) {
+    vlist.new.anno$cid[i] <- api_aid2cid(vlist.new.anno$aid[i])
+    vlist.new.anno$tags[i] <- I(api_getbilitags(vlist.new.anno$aid[i]))
+    vlist.new.anno$categories[i] <- I(list(c(vlist.new.anno$zmz[i], 
+      vlist.new.anno$author[i])))
+    vlist.new.anno$bangumis[i] <- I(list(vlist.new.anno$bangumi[i]))
+    vlist.new.anno$author[i] = I(list(unique(c(vlist.new.anno$zmz[i], 
+      vlist.new.anno$author[i]))))
+    Sys.sleep(1)
+  }
+  message("\n...cid, tags, categories, bangumis finished, uploading front cover to imgur")
+  if (imgur) {
+    for (i in 1:nrow(vlist.new.anno)) {
+      vlist.new.anno$imgur[i] <- api_upload_imgur(vlist.new.anno$pic[i])
+    }
+  }
+  else {
+    for (i in 1:nrow(vlist.new.anno)) {
+      vlist.new.anno$imgur[i] = api_upload_github(vlist.new.anno$pic[i], 
+        "~/GIT/owaraisite/static/tmpimg/")
+    }
+  }
+  vlist.new.anno <- vlist.new.anno %>% mutate(text = paste0("![](", 
+    imgur, ")\n", "# 简介  \n", desc, "  \n", "\n[去B站观看](https://www.bilibili.com/video/av", 
+    aid, "/)\n", "<div class =\"resp-container\">", "<iframe class=\"testiframe\" src=\"//player.bilibili.com/player.html?aid=", 
+    aid, "\"\", scrolling=\"no\", allowfullscreen=\"true\" > </iframe>", 
+    "</div>", " "))
+  return(vlist.new.anno)
+}
+
+```
+
+```{r}
+
+getbangumi2 = function(vector, bangumi_map) {
+
+  vector = gsub(" +", "", vector)
+  vector = tolower(vector)
+
+  pattern = paste0("(", paste0(tolower(bangumi_map$V1), collapse = "|"), ")")
+  test = stringr::str_match_all(vector, pattern)
+  bangumis = sapply(test, function(mat){
+    if (length(mat) == 0) return("其他")
+    else{
+      return(bangumi_map$V2[max(match(mat[, 1], bangumi_map$V1))])
+    }
+  })
+  return(bangumis)
+}
+
+getyearsdf <- function(vector_character,date_format="%y%m%d"){
+  library(dplyr)
+  library(lubridate)
+  library(stringr)
+
+  df <- data.frame(text = vector_character)
+
+  df.tmp <- df %>%
+    mutate(year1 = stringr::str_extract(text, "[0-9]{6,8}")) %>%
+    mutate(year2 = stringr::str_extract(
+      text,
+      "[0-9]{2,4}[-\\.][0-9]{1,2}[-\\.][0-9]{1,2}"
+    )) %>%
+    mutate(year3 = ifelse(is.na(year1), year2, year1)) %>%
+    mutate(year4 =
+             lubridate::parse_date_time(
+               x = year3,
+               orders = c("ymd", "y-m-d", "y.m.d", "Ymd")
+    )) %>%
+    mutate(date=year4) %>%
+    pull(date)
+
+  return(df.tmp)
+}
+
+annotate_vlist_step1= function(vlist.new,bangumi_map=NULL){
+  if (nrow(vlist.new) == 0) {
+    message("# no post to annotate")
+    return(NULL)
+  }
+  
+  vlist.new.anno <- vlist.new
+  class(vlist.new.anno$created) <- "POSIXct"
+  
+  vlist.new.anno <- 
+    vlist.new.anno %>% 
+    mutate(up = author) %>% 
+    mutate(bangumi = tolower(getbangumi2(title, bangumi_map))) %>% 
+    mutate(title_bk = title, title = gsub("【.*?】", "", 
+      title_bk)) %>% 
+    mutate(airdate = getyearsdf(title)) %>% 
+    mutate(slug = paste0(format(created, "%Y-%m-%d"), "-", 
+      format(airdate, "%y%m%d"), "-", aid)) %>% 
+    mutate(desc = description) %>% 
+    mutate(description = paste0(bangumi, "&#8226;", format(airdate, 
+      "%y%m%d"))) %>% 
+    mutate(date = Sys.time()) %>%
+    mutate(publishdate = ifelse(is.na(airdate), 
+    format(lubridate::parse_date_time("20010103", orders = "Y-m-d"), 
+      "%Y-%m-%d"), format(airdate, "%Y-%m-%d"))) %>%
+    mutate(weight = 2e+05 - as.numeric(format(date, "%y%m%d"))) %>%
+    mutate(date = format(date,  "%Y-%m-%d"))
+  
+  vlist.new.anno$cid = NA
+  vlist.new.anno$imgur = NA
+  vlist.new.anno$tags = NA
+  
+  
+  return(vlist.new)
+}
+```
+
+
+```{r}
+vlist.new.step1 = annotate_vlist_step1(vlist.all.df.new,bangumi_map=bangumi_map)
+```
+
+```{r}
+annotate_vlist_step2 = function(vlist.new.step1) {
+  
+  vlist.new.anno = vlist.new.step1
+  
+  for (i in 1:nrow(vlist.new.anno)) {
+    # vlist.new.anno$cid[i] <- api_aid2cid(vlist.new.anno$aid[i])
+    vlist.new.anno$tags[i] <-
+      I(api_getbilitags(vlist.new.anno$aid[i]))
+    vlist.new.anno$categories[i] <- I(list(c(
+      vlist.new.anno$zmz[i],
+      vlist.new.anno$author[i]
+    )))
+    vlist.new.anno$bangumis[i] <- I(list(vlist.new.anno$bangumi[i]))
+    vlist.new.anno$author[i] = I(list(unique(
+      c(vlist.new.anno$zmz[i],
+        vlist.new.anno$author[i])
+    )))
+    Sys.sleep(1)
+  }
+}
+```
+
+
+
+```{r}
+vlist.all.json= jsonlite::toJSON(vlist.all.df.new)
+
+vlist.all.l = jsonlite::fromJSON(vlist.all.json,simplifyDataFrame=FALSE)
+```
+
+

@@ -3,7 +3,9 @@
 suppressPackageStartupMessages(library(dplyr))
 
 post_path="~/GIT/owaraisite/content/post/"
+lhdata_path="~/GIT/lhdata/"
 
+#    2871717   村上信五补给站   村上信五补给站           中字
 mid=data.table::fread(
 "
       mids           author              zmz             kw
@@ -30,12 +32,16 @@ mid=data.table::fread(
     640575           驴三爷         驴叁字幕           字幕
    9301812   东海毛绒芝士熊     节奏不是主义           中字
    2872158        第8号仔牛         鲸人字幕           字幕
-   2871717   村上信五补给站   村上信五补给站           中字
    501890586       七沢の星         七沢の星           中字
    5988114 くりぃむしちゅー上田 くりぃむしちゅー上田   中字
-
 "
 )
+
+# lhdata2::bangumi_map
+bangumi_map=data.table::fread(paste0(lhdata_path,"data/bangumi_list.txt"),header=FALSE)
+
+bangumi_map$V1 = tolower(bangumi_map$V1)
+
 
 oldav= owaraitool::get_existing_aid("~/GIT/owaraisite/content/post/",
                         "~/GIT/owaraisite/content/neta/")
@@ -71,7 +77,7 @@ if (nrow(vlist.all.df.new)==0) {
 message("###########################################################")
 message("...annotating\n")
 #source("../R/annotate_vlist.R")
-vlist.new.anno = owaraitool::annotate_vlist(vlist.all.df.new, bangumi_map = lhdata2::bangumi_map, imgur = FALSE)
+vlist.new.anno = owaraitool::annotate_vlist(vlist.all.df.new, bangumi_map = bangumi_map, imgur = FALSE)
 
 
 
