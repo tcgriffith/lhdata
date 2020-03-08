@@ -17,6 +17,7 @@ mid=data.table::fread(
     576772        nonkotori  nonkotori字幕组           字幕
    1464994 翅膀包工队字幕组 翅膀包工队字幕组           中字
    2092340       永远的新规       永远的新规           渣翻
+   2092340       永远的新规       永远的新规           字幕
    1878868       345channel    OWALIAR字幕组           字幕
     633450          Notttti         镰鼬字幕           字幕
     945697        凉薯Imoko        imoko字幕           字幕

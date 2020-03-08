@@ -61,7 +61,7 @@ oldav= owaraitool::get_existing_aid("~/GIT/owaraisite/content/post/",
 ## runit
 
 ```{r}
-mid.filt=mid[21:26,]
+mid.filt=mid
 
 
 
@@ -74,10 +74,38 @@ vlist.all = pbapply::pblapply(1:nrow(mid.filt), function(i){
 
 vlist.all.df = do.call(rbind,vlist.all)
 
+
+```
+
+```{r}
 vlist.all.df.new = vlist.all.df %>%
   filter(! aid %in% oldav)
 ```
 
+
+
+```{r}
+
+message("###########################################################")
+message("...annotating\n")
+#source("../R/annotate_vlist.R")
+vlist.new.anno = owaraitool::annotate_vlist(vlist.all.df.new, bangumi_map = bangumi_map, imgur = FALSE)
+
+```
+
+```{r}
+message("###########################################################")
+message("...generating posts")
+
+owaraitool::generate_post2(vlist.new.anno,post_path)
+
+message("###########################################################")
+message("...finished")
+message(Sys.time())
+```
+
+
+### exp
 ```{r}
 annotate_vlist_v2= function (vlist.new, bangumi_map, imgur = TRUE) 
 {
