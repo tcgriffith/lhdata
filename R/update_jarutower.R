@@ -109,7 +109,7 @@ vlist.tower %>%
   knitr::kable(format = "markdown")
 
 alltower = c(header, 
-             "\n![flyer](https://raw.githubusercontent.com/tcgriffith/owaraisite/master/static/img/jarutower.jpg)\n\n",
+             "\n![flyer](https://raw.githubusercontent.com/tcgriffith/owaraisite/master/static/img/jarutower.scale.jpg)\n\n",
              "> JARUJARU自称拥有8000个段子，现在以「JARU JARU TOWER」的形式在公式HP和油管每天更新一个。更新一次即是加建一层，居民则是短剧角色：由JARUJARU扮演的奇怪的人。距离「JARU JARU TOWER」建成8000层的2039年11月7日还有二十年。\n",
              
              "",
