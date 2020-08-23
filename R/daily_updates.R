@@ -37,6 +37,7 @@ mid=data.table::fread(
    501890586       七沢の星         七沢の星           中字
    5988114 くりぃむしちゅー上田 くりぃむしちゅー上田   中字
    2871717   村上信五补给站   村上信五补给站           中字
+   6358514       含糖的小鸡       含糖的小鸡           中字
 "
 )
 
@@ -55,6 +56,7 @@ message("###########################################################")
 message(Sys.time())
 message("...start scraping\n")
 
+pbapply::pboptions(type="txt")
 vlist.all = pbapply::pblapply(1:nrow(mid), function(i){
   vlist = owaraitool::api_getuploads_fp(mid$mids[i],kw=mid$kw[i])
   vlist$zmz=mid$zmz[i]
@@ -80,7 +82,7 @@ if (nrow(vlist.all.df.new)==0) {
 message("###########################################################")
 message("...annotating\n")
 #source("../R/annotate_vlist.R")
-vlist.new.anno = owaraitool::annotate_vlist(vlist.all.df.new, bangumi_map = bangumi_map, imgur = FALSE)
+vlist.new.anno = owaraitool::annotate_vlist(vlist.all.df.new, bangumi_map = bangumi_map)
 
 
 
