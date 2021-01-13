@@ -1,0 +1,79 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+
+```{r}
+library(yaml)
+library(dplyr)
+```
+
+```{r}
+tmp = rmarkdown::yaml_front_matter("~/GIT/owaraisite/content/post/2020-03-01-200203-92816239.md")
+
+```
+
+```{r}
+yaml::as.yaml(tmp,indent = 4, indent.mapping.sequence = TRUE) %>% writeLines() 
+```
+
+```{r}
+update_yaml_author = function(yamlobj){
+  
+  extra_author= stringr::str_match_all(yamlobj$brief,"@(.*?) ")[[1]][,2]
+  
+  yamlobj$author=unique(c(tmp$author,extra_author))
+
+  return(yamlobj)
+}
+```
+
+
+```{r}
+post_update_author=function(post){
+  input_lines = xfun::read_utf8("~/GIT/owaraisite/content/post/2020-03-01-200203-92816239.md")
+  old_header = rmarkdown::yaml_front_matter("~/GIT/owaraisite/content/post/2020-03-01-200203-92816239.md")
+  new_header = update_yaml_author(old_header)
+  
+  
+}
+```
+
+```{r}
+yaml::as.yaml()
+```
+
+
+```{r}
+
+post = "~/GIT/owaraisite/content/post/2020-03-01-200203-92816239.md"
+input_lines = xfun::read_utf8(post)
+# input_lines
+
+old_header = rmarkdown::yaml_front_matter(post)
+new_header = update_yaml_author(old_header)
+
+delimiters <- grep("^(---|\\.\\.\\.)\\s*$", input_lines)
+
+content = input_lines[(delimiters[2] + 1):length(input_lines)]
+
+newheader_yaml = yaml::as.yaml(new_header, indent.mapping.sequence = TRUE)
+
+newpost = paste0(c("---",
+                   newheader_yaml,
+                   "---",
+                   content),
+                 collapse = "\n")
+
+writeLines(newpost, con=post)
+ 
+# rmarkdown:::parse_yaml_front_matter(input_lines)
+```
